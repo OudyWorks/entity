@@ -1,4 +1,5 @@
 import EventEmitter from 'events'
+import plural from 'plural'
 
 const emitter = new EventEmitter()
 
@@ -27,5 +28,9 @@ export default class Entity {
     }
     static removeListener() {
         return emitter.removeListener.apply(this, arguments)
+    }
+
+    static get pluralName() {
+        return plural(this.name)
     }
 }
