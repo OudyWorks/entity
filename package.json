@@ -1,0 +1,26 @@
+{
+  "name": "@oudyworks/entity",
+  "version": "1.0.0",
+  "description": "Entity for everything :D",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel source --out-dir npm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OudyWorks/entity.git"
+  },
+  "keywords": [
+    "entity"
+  ],
+  "author": "Ayoub Oudmane <ayoub@oudmane.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/OudyWorks/entity/issues"
+  },
+  "homepage": "https://github.com/OudyWorks/entity#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1"
+  }
+}
