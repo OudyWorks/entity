@@ -3,7 +3,7 @@ import EventEmitter from 'events'
 const emitter = new EventEmitter()
 
 export default class Entity {
-    
+
     constructor() {
         
         let emitter = new EventEmitter()
@@ -17,15 +17,15 @@ export default class Entity {
 
     // Events
     static on() {
-        emitter.on.apply(this, arguments)
+        return emitter.on.apply(this, arguments)
     }
     static once() {
-        emitter.once.apply(this, arguments)
+        return emitter.once.apply(this, arguments)
     }
     static emit() {
-        emitter.emit.apply(this, arguments)
+        return emitter.emit.apply(this, arguments)
     }
     static removeListener() {
-        emitter.removeListener.apply(this, arguments)
+        return emitter.removeListener.apply(this, arguments)
     }
 }
