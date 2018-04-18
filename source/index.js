@@ -1,11 +1,22 @@
 import EventEmitter from 'events'
 import plural from 'plural'
+import build from './build'
+import bind from './bind'
+import deepClone from 'lodash.clonedeep'
+import deepmerge from 'deepmerge'
+import {
+    diff
+} from 'deep-object-diff'
+import flattenObj from 'flatten-obj'
 
-const emitter = new EventEmitter()
+const   emitter = new EventEmitter(),
+        flatten = flattenObj()
 
 export default class Entity {
 
     constructor() {
+
+        build(this, this.constructor.type, this.constructor.defaultValues || {})
         
         let emitter = new EventEmitter()
  
@@ -14,6 +25,29 @@ export default class Entity {
         this.emit = emitter.emit
         this.removeListener = emitter.removeListener
 
+
+
+    }
+
+    bind(state, trackChange = true, bindObject = {}) {
+        let oldObject = deepClone(this)
+        bind(this, state, this.constructor.type, trackChange)
+        let difference = flatten(diff(oldObject, this)),
+            changes = Object.keys(difference)
+        return Object.assign(
+            bindObject,
+            {
+                oldObject,
+                newObject: this,
+                difference,
+                changes,
+                changed: !!changes.length
+            }
+        )
+    }
+
+    json(space = 4, replacer = null) {
+        return JSON.stringify(this, replacer, space)
     }
 
     // Events
