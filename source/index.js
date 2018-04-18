@@ -30,18 +30,24 @@ export default class Entity {
     }
 
     bind(state, trackChange = true, bindObject = {}) {
-        let oldObject = deepClone(this)
-        bind(this, state, this.constructor.type, trackChange)
-        let difference = flatten(diff(oldObject, this)),
-            changes = Object.keys(difference)
-        return Object.assign(
-            bindObject,
-            {
-                oldObject,
-                newObject: this,
-                difference,
-                changes,
-                changed: !!changes.length
+        return new Promise(
+            resolve => {
+                let oldObject = deepClone(this)
+                bind(this, state, this.constructor.type, trackChange)
+                let difference = flatten(diff(oldObject, this)),
+                    changes = Object.keys(difference)
+                resolve(
+                    Object.assign(
+                        bindObject,
+                        {
+                            oldObject,
+                            newObject: this,
+                            difference,
+                            changes,
+                            changed: !!changes.length
+                        }
+                    )
+                )
             }
         )
     }
