@@ -16,7 +16,7 @@ class Entity {
 
     constructor() {
 
-        build(this, this.constructor.type, this.constructor.defaultValues || {})
+        this.build()
 
         this[Entity.context] = {}
         
@@ -26,6 +26,12 @@ class Entity {
         this.once = emitter.once
         this.emit = emitter.emit
         this.removeListener = emitter.removeListener
+
+    }
+
+    build() {
+
+        build(this, this.constructor.type, this.constructor.defaultValues || {})
 
     }
 
