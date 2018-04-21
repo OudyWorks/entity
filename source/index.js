@@ -12,11 +12,13 @@ import flattenObj from 'flatten-obj'
 const   emitter = new EventEmitter(),
         flatten = flattenObj()
 
-export default class Entity {
+class Entity {
 
     constructor() {
 
         build(this, this.constructor.type, this.constructor.defaultValues || {})
+
+        this[Entity.context] = {}
         
         let emitter = new EventEmitter()
  
@@ -25,29 +27,60 @@ export default class Entity {
         this.emit = emitter.emit
         this.removeListener = emitter.removeListener
 
-
-
     }
 
     bind(state, trackChange = true, bindObject = {}) {
         return new Promise(
             resolve => {
-                let oldObject = deepClone(this)
-                bind(this, state, this.constructor.type, trackChange)
-                let difference = flatten(diff(oldObject, this)),
-                    changes = Object.keys(difference)
-                resolve(
-                    Object.assign(
-                        bindObject,
-                        {
-                            oldObject,
-                            newObject: this,
-                            difference,
-                            changes,
-                            changed: !!changes.length
+
+                if(trackChange) {
+
+                    let oldObject = deepClone(this)
+
+                    new Promise(
+                        resolve => {
+                            if(typeof this.validate == 'function') {
+                                bindObject.errors = {}
+                                bindObject.erred = {}
+                                this.validate(state, bindObject.errors).then(
+                                    () => {
+                                        bindObject.erred = !!Object.values(flatten(bindObject.errors)).filter(e => e).length
+                                        resolve()
+                                    }
+                                )
+                            } else
+                                resolve()
+                        }
+                    ).then(
+                        () => {
+
+                            bind(this, state, this.constructor.type)
+
+                            let difference = flatten(diff(oldObject, this)),
+                                changes = Object.keys(difference)
+
+                            resolve(
+                                Object.assign(
+                                    bindObject,
+                                    {
+                                        oldObject,
+                                        newObject: this,
+                                        difference,
+                                        changes,
+                                        changed: !!changes.length
+                                    }
+                                )
+                            )
+
                         }
                     )
-                )
+
+                } else {
+
+                    bind(this, state, this.constructor.type)
+                    resolve(this)
+
+                }
             }
         )
     }
@@ -74,3 +107,7 @@ export default class Entity {
         return plural(this.name)
     }
 }
+
+Entity.context = Symbol()
+
+export default Entity
