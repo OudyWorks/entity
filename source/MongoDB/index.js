@@ -77,6 +77,11 @@ class MongoDBEntity extends Entity {
             }
         )
     }
+    static clear(id, context = {}) {
+        let collection = this[MongoDBEntity.collection](context),
+            database = this[MongoDBEntity.database](context)
+        return MongoDBBatch.clear(id, collection, database)
+    }
 }
 
 MongoDBEntity.collection = Symbol()
