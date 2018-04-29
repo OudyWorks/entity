@@ -64,8 +64,8 @@ class MongoDBEntity extends Entity {
         let collection = this[MongoDBEntity.collection](context),
             database = this[MongoDBEntity.database](context)
         return MongoDBBatch.loadAll(query, collection, database).then(
-            documents =>
-                documents.map(
+            result => {
+                result.list = result.list.map(
                     document => {
                         let instance = new this()
                         instance[Entity.context] = context
@@ -73,6 +73,8 @@ class MongoDBEntity extends Entity {
                         return instance
                     }
                 )
+                return result
+            }
         )
     }
 }
