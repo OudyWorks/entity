@@ -60,6 +60,21 @@ class MongoDBEntity extends Entity {
             }
         )
     }
+    static loadAll(query = {query: {}, limit: 20, page: 1}, context = {}) {
+        let collection = this[MongoDBEntity.collection](context),
+            database = this[MongoDBEntity.database](context)
+        return MongoDBBatch.loadAll(query, collection, database).then(
+            documents =>
+                documents.map(
+                    document => {
+                        let instance = new this()
+                        instance[Entity.context] = context
+                        instance.bind(document || {}, false)
+                        return instance
+                    }
+                )
+        )
+    }
 }
 
 MongoDBEntity.collection = Symbol()
