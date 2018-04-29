@@ -55,7 +55,7 @@ class MongoDBEntity extends Entity {
             object => {
                 let instance = new this()
                 instance[Entity.context] = context
-                instance.bind(object, false)
+                instance.bind(object || {}, false)
                 return instance
             }
         )
