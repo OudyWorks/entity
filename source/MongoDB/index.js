@@ -87,8 +87,12 @@ class MongoDBEntity extends Entity {
 MongoDBEntity.collection = Symbol()
 MongoDBEntity.database = Symbol()
 
-MongoDBEntity[MongoDBEntity.collection] = function() {
-    return this.pluralName.toLowerCase()
+MongoDBEntity[MongoDBEntity.collection] = function(context) {
+    return this[Entity.context].map(
+        key =>
+            `${key}:${context[key]}`
+
+    ).concat(this.pluralName.toLowerCase()).join(':')
 }
 
 MongoDBEntity[MongoDBEntity.database] = function() {

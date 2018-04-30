@@ -1,6 +1,6 @@
 {
   "name": "@oudyworks/entity",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Entity for everything :D",
   "main": "index.js",
   "scripts": {
