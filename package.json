@@ -1,6 +1,6 @@
 {
   "name": "@oudyworks/entity",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Entity for everything :D",
   "main": "index.js",
   "scripts": {
@@ -29,6 +29,7 @@
     "deepmerge": "^2.1.0",
     "flatten-obj": "^3.1.1",
     "lodash.clonedeep": "^4.5.0",
+    "object-path": "^0.11.4",
     "plural": "^1.1.0"
   },
   "optionalDependencies": {

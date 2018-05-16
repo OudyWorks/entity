@@ -114,7 +114,7 @@ class Entity {
     }
 }
 
-Entity.context = Symbol()
+Entity.context = Symbol('context')
 Entity[Entity.context] = []
 
 export default Entity

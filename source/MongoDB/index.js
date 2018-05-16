@@ -1,5 +1,6 @@
 import Entity from '../index'
 import MongoDBBatch from '@oudyworks/drivers/MongoDB/Batch'
+import objectPath from 'object-path'
 
 class MongoDBEntity extends Entity {
     bind(state, trackChange = true, bindObject = {}) {
@@ -11,36 +12,110 @@ class MongoDBEntity extends Entity {
     }
     save(bind) {
 
-        let payload = [],
+        let payload = this.mongoDBDocument(),
             context = this[Entity.context],
             collection = this.constructor[MongoDBEntity.collection](context),
-            database = this.constructor[MongoDBEntity.database](context)
+            database = this.constructor[MongoDBEntity.database](context),
+            $return = Promise.resolve()
 
-        if(bind) {
+        if(this.id && bind) {
 
+            let $set = {},
+                $unset = {},
+                $pullAll = {}
+
+            Object.keys(bind.difference).forEach(
+                key => {
+
+                    if(bind.difference[key] === undefined) {
+                        if(key.match(/\.\d+$/)) {
+                            if(!$pullAll[key.replace(/\.\d+$/, '')])
+                                $pullAll[key.replace(/\.\d+$/, '')] = []
+                            $pullAll[key.replace(/\.\d+$/, '')].push(
+                                objectPath.get(bind.oldObject, key)
+                            )
+                        } else
+                            $unset[key] = true
+                    } else
+                        $set[key] = objectPath.get(bind.newObject, key)
+
+                }
+            )
+
+            $set = Object.keys($set).length ? $set : undefined,
+            $unset = Object.keys($unset).length ? $unset : undefined
+            $pullAll = Object.keys($pullAll).length ? $pullAll : undefined
             
-
-        } else {
-
-            if(this.id)
-                return MongoDBBatch.update(
-                    this.id,
-                    this.mongoDBDocument(),
-                    collection,
-                    database
-                )
-            
-            else
-                return MongoDBBatch.insert(
-                    this.mongoDBDocument(),
-                    collection,
-                    database
-                ).then(
-                    id =>
-                        this.id = id
-                )
+            payload = [
+                {$set},
+                {$unset},
+                {$pullAll}
+            ]
+        
+            if($set === undefined && $unset === undefined && $pullAll === undefined)
+                return $return
 
         }
+
+
+        if(this.id)
+            $return = MongoDBBatch.update(
+                this.id,
+                payload,
+                collection,
+                database
+            ).then(
+                () => {
+                    if(bind) {
+                        this.emit(
+                            'update',
+                            bind
+                        )
+                        this.constructor.emit(
+                            'update',
+                            bind
+                        )
+                    }
+                }
+            )
+        
+        else
+            $return = MongoDBBatch.insert(
+                payload,
+                collection,
+                database
+            ).then(
+                id =>
+                    this.id = id
+            ).then(
+                () => {
+                    if(bind) {
+                        this.emit(
+                            'new',
+                            bind
+                        )
+                        this.constructor.emit(
+                            'new',
+                            bind
+                        )
+                    }
+                }
+            )
+
+        return $return.then(
+            () => {
+                if(bind) {
+                    this.emit(
+                        'save',
+                        bind
+                    )
+                    this.constructor.emit(
+                        'save',
+                        bind
+                    )
+                }
+            }
+        )
 
     }
     mongoDBDocument() {
@@ -84,8 +159,8 @@ class MongoDBEntity extends Entity {
     }
 }
 
-MongoDBEntity.collection = Symbol()
-MongoDBEntity.database = Symbol()
+MongoDBEntity.collection = Symbol('collection')
+MongoDBEntity.database = Symbol('database')
 
 MongoDBEntity[MongoDBEntity.collection] = function(context) {
     return this[Entity.context].map(
