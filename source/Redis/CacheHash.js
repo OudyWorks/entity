@@ -20,7 +20,7 @@ class CacheHash {
         Entity.isExistInCacheHash = function(key, value, context = {}) {
 
             let KEY = this[CacheHash.key](key, context),
-                CLIENT = this[CacheHash.client](bind.newObject[Entity.context])
+                CLIENT = this[CacheHash.client](context)
 
             if(key == 'id')
                 return RedisDBBatch.sismember(KEY, value, CLIENT)
