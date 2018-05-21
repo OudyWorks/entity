@@ -114,6 +114,7 @@ class MongoDBEntity extends Entity {
                         bind
                     )
                 }
+                return this.constructor.clear(this.id)
             }
         )
 
@@ -170,7 +171,7 @@ MongoDBEntity[MongoDBEntity.collection] = function(context) {
     ).concat(this.pluralName.toLowerCase()).join(':')
 }
 
-MongoDBEntity[MongoDBEntity.database] = function() {
+MongoDBEntity[MongoDBEntity.database] = function(context) {
     return 'default'
 }
 
