@@ -10,6 +10,9 @@ export default function build(object, type, defaultValues = {}) {
                         case 'Array':
                             object[key] = []
                             break
+                        case 'Object':
+                            object[key] = new type[key](defaultValues[key] || {})
+                            break
                         default:
                             object[key] = !defaultValues[key] ? new type[key]().valueOf() : new type[key](defaultValues[key]).valueOf()
                             break

@@ -114,7 +114,10 @@ class MongoDBEntity extends Entity {
                         bind
                     )
                 }
-                return this.constructor.clear(this.id, context)
+                return this.constructor.clear(this.id, context).then(
+                    () =>
+                        this
+                )
             }
         )
 

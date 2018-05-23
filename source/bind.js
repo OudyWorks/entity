@@ -9,10 +9,13 @@ export default function bind(object, state, type) {
                     case 'function':
                         switch(type[key].name) {
                             case 'Array':
-                            object[key] = new type[key](...state[key]).valueOf()
+                                object[key] = new type[key](...state[key]).valueOf()
+                                break
+                            case 'Object':
+                                object[key] = new type[key](state[key])
                                 break
                             default:
-                            object[key] = new type[key](state[key]).valueOf()
+                                object[key] = new type[key](state[key]).valueOf()
                                 break
                         }
                         break
