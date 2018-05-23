@@ -117,4 +117,9 @@ class Entity {
 Entity.context = Symbol('context')
 Entity[Entity.context] = []
 
+Entity.validateContext = Symbol('context')
+Entity[Entity.validateContext] = async function(context) {
+    return context
+}
+
 export default Entity

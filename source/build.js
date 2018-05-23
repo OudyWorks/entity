@@ -1,15 +1,19 @@
 export default function build(object, type, defaultValues = {}) {
     Object.keys(type).forEach(
         key => {
-            switch(type[key].name || type[key].constructor.name) {
-                case 'Object':
+            switch(typeof type[key]) {
+                case 'object':
                     build(object[key] = {}, type[key], defaultValues[key] || {})
                     break
-                case 'Array':
-                    object[key] = []
-                    break
-                default:
-                    object[key] = !defaultValues[key] ? new type[key]().valueOf() : new type[key](defaultValues[key]).valueOf()
+                case 'function':
+                    switch(type[key].name) {
+                        case 'Array':
+                            object[key] = []
+                            break
+                        default:
+                            object[key] = !defaultValues[key] ? new type[key]().valueOf() : new type[key](defaultValues[key]).valueOf()
+                            break
+                    }
                     break
             }
         }

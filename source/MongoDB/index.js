@@ -114,7 +114,7 @@ class MongoDBEntity extends Entity {
                         bind
                     )
                 }
-                return this.constructor.clear(this.id)
+                return this.constructor.clear(this.id, context)
             }
         )
 
@@ -124,7 +124,8 @@ class MongoDBEntity extends Entity {
         delete document.id
         return document
     }
-    static load(id, context = {}) {
+    static async load(id, context = {}) {
+        await this[Entity.validateContext](context)
         let collection = this[MongoDBEntity.collection](context),
             database = this[MongoDBEntity.database](context)
         return MongoDBBatch.load(id, collection, database).then(
@@ -136,7 +137,8 @@ class MongoDBEntity extends Entity {
             }
         )
     }
-    static loadAll(query = {query: {}, limit: 20, page: 1}, context = {}) {
+    static async loadAll(query = {query: {}, limit: 20, page: 1}, context = {}) {
+        await this[Entity.validateContext](context)
         let collection = this[MongoDBEntity.collection](context),
             database = this[MongoDBEntity.database](context)
         return MongoDBBatch.loadAll(query, collection, database).then(
@@ -153,7 +155,32 @@ class MongoDBEntity extends Entity {
             }
         )
     }
-    static clear(id, context = {}) {
+    static async loadMany(ids, context = {}) {
+        await this[Entity.validateContext](context)
+        let collection = this[MongoDBEntity.collection](context),
+            database = this[MongoDBEntity.database](context)
+        return MongoDBBatch.loadMany(ids, collection, database).then(
+            result => {
+                result.map(
+                    document => {
+                        let instance = new this()
+                        instance[Entity.context] = context
+                        instance.bind(document || {}, false)
+                        return instance
+                    }
+                )
+                return result
+            }
+        )
+    }
+    static async count(query = {}, context = {}) {
+        await this[Entity.validateContext](context)
+        let collection = this[MongoDBEntity.collection](context),
+            database = this[MongoDBEntity.database](context)
+        return MongoDBBatch.count(query, collection, database)
+    }
+    static async clear(id, context = {}) {
+        await this[Entity.validateContext](context)
         let collection = this[MongoDBEntity.collection](context),
             database = this[MongoDBEntity.database](context)
         return MongoDBBatch.clear(id, collection, database)

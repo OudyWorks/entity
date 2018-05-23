@@ -1,4 +1,5 @@
 import RedisDBBatch from '@oudyworks/drivers/Redis/Batch'
+import objectPath from 'object-path'
 
 class CacheHash {
     static use(Entity) {
@@ -17,7 +18,9 @@ class CacheHash {
             return 'default'
         }
 
-        Entity.isExistInCacheHash = function(key, value, context = {}) {
+        Entity.isExistInCacheHash = async function(key, value, context = {}) {
+            
+            await this[Entity.validateContext](context)
 
             let KEY = this[CacheHash.key](key, context),
                 CLIENT = this[CacheHash.client](context)
@@ -56,16 +59,16 @@ class CacheHash {
                                     if(bind.changes.includes(key)) {
                                         let KEY = this[CacheHash.key](key, bind.newObject[Entity.context]),
                                             CLIENT = this[CacheHash.client](bind.newObject[Entity.context])
-                                        if(bind.oldObject[key])
+                                        if(objectPath(bind.oldObject, key))
                                             await RedisDBBatch.hdel(
                                                 KEY,
-                                                bind.oldObject[key],
+                                                objectPath.get(bind.oldObject, key),
                                                 CLIENT
                                             )
-                                        if(bind.newObject[key])
+                                        if(objectPath(bind.newObject, key))
                                             await RedisDBBatch.hset(
                                                 KEY,
-                                                bind.newObject[key],
+                                                objectPath.get(bind.newObject, key),
                                                 `${bind.newObject.id}`,
                                                 CLIENT
                                             )
