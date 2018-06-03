@@ -59,13 +59,13 @@ class CacheHash {
                                     if(bind.changes.includes(key)) {
                                         let KEY = this[CacheHash.key](key, bind.newObject[Entity.context]),
                                             CLIENT = this[CacheHash.client](bind.newObject[Entity.context])
-                                        if(objectPath(bind.oldObject, key))
+                                        if(objectPath.get(bind.oldObject, key))
                                             await RedisDBBatch.hdel(
                                                 KEY,
                                                 objectPath.get(bind.oldObject, key),
                                                 CLIENT
                                             )
-                                        if(objectPath(bind.newObject, key))
+                                        if(objectPath.get(bind.newObject, key))
                                             await RedisDBBatch.hset(
                                                 KEY,
                                                 objectPath.get(bind.newObject, key),

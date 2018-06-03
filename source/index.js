@@ -22,10 +22,10 @@ class Entity {
         
         let emitter = new EventEmitter()
  
-        this.on = emitter.on
-        this.once = emitter.once
-        this.emit = emitter.emit
-        this.removeListener = emitter.removeListener
+        this.on = emitter.on.bind(emitter)
+        this.once = emitter.once.bind(emitter)
+        this.emit = emitter.emit.bind(emitter)
+        this.removeListener = emitter.removeListener.bind(emitter)
 
     }
 
@@ -73,7 +73,9 @@ class Entity {
                                         newObject: this,
                                         difference,
                                         changes,
-                                        changed: !!changes.length
+                                        changed: !!changes.length,
+                                        context: this[Entity.context],
+                                        id: this.id
                                     }
                                 )
                             )

@@ -85,8 +85,11 @@ class MongoDBEntity extends Entity {
                 collection,
                 database
             ).then(
-                id =>
+                id => {
                     this.id = id
+                    if(bind)
+                        bind.id = id
+                }
             ).then(
                 () => {
                     if(bind) {
