@@ -32,6 +32,10 @@ class CacheHash {
             
         }
 
+        Entity.cacheHash = function() {
+            this[CacheHash.cacheHash] = Array.from(arguments)
+        }
+
         Entity.__defineSetter__(
             CacheHash.cacheHash,
             function(keys) {
