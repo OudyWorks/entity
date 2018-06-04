@@ -114,6 +114,23 @@ class Entity {
     static get pluralName() {
         return plural(this.name)
     }
+
+    bindAndSave(state) {
+        return this.bind(state).then(
+            bind =>
+                !bind.erred && this.save(bind)
+        )
+    }
+    static bindAndSave(id, state, context = {}) {
+        return this.load(id, context).then(
+            object =>
+                object.bindAndSave(state).then(
+                    () =>
+                        object
+                )
+        )
+    }
+
 }
 
 Entity.context = Symbol('context')
