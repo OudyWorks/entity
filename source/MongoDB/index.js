@@ -86,9 +86,9 @@ class MongoDBEntity extends Entity {
                 database
             ).then(
                 id => {
-                    this.id = id
+                    this.id = id.toHexString()
                     if(bind)
-                        bind.id = id
+                        bind.id = this.id
                 }
             ).then(
                 () => {
