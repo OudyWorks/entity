@@ -33,57 +33,56 @@ class CacheHash {
         }
 
         Entity.cacheHash = function() {
-            this[CacheHash.cacheHash] = Array.from(arguments)
-        }
-
-        Entity.__defineSetter__(
-            CacheHash.cacheHash,
-            function(keys) {
-                keys.forEach(
-                    key => {
-
-                        if(key == 'id')
-                            this.on(
-                                'new',
-                                bind => {
-                                    let KEY = this[CacheHash.key](key, bind.newObject[Entity.context]),
-                                        CLIENT = this[CacheHash.client](bind.newObject[Entity.context])
-                                    RedisDBBatch.sadd(
-                                        KEY,
-                                        `${bind.newObject.id}`,
-                                        CLIENT
-                                    )
-                                }
-                            )
-
-                        else
-                            this.on(
-                                'save',
-                                async bind => {
-                                    if(bind.changes.includes(key)) {
+            this.__defineSetter__(
+                CacheHash.cacheHash,
+                function(keys) {
+                    keys.forEach(
+                        key => {
+    
+                            if(key == 'id')
+                                this.on(
+                                    'new',
+                                    bind => {
                                         let KEY = this[CacheHash.key](key, bind.newObject[Entity.context]),
                                             CLIENT = this[CacheHash.client](bind.newObject[Entity.context])
-                                        if(objectPath.get(bind.oldObject, key))
-                                            await RedisDBBatch.hdel(
-                                                KEY,
-                                                objectPath.get(bind.oldObject, key),
-                                                CLIENT
-                                            )
-                                        if(objectPath.get(bind.newObject, key))
-                                            await RedisDBBatch.hset(
-                                                KEY,
-                                                objectPath.get(bind.newObject, key),
-                                                `${bind.newObject.id}`,
-                                                CLIENT
-                                            )
+                                        RedisDBBatch.sadd(
+                                            KEY,
+                                            `${bind.newObject.id}`,
+                                            CLIENT
+                                        )
                                     }
-                                }
-                            )
-
-                    }
-                )
-            }
-        )
+                                )
+    
+                            else
+                                this.on(
+                                    'save',
+                                    async bind => {
+                                        if(bind.changes.includes(key)) {
+                                            let KEY = this[CacheHash.key](key, bind.newObject[Entity.context]),
+                                                CLIENT = this[CacheHash.client](bind.newObject[Entity.context])
+                                            if(objectPath.get(bind.oldObject, key))
+                                                await RedisDBBatch.hdel(
+                                                    KEY,
+                                                    objectPath.get(bind.oldObject, key),
+                                                    CLIENT
+                                                )
+                                            if(objectPath.get(bind.newObject, key))
+                                                await RedisDBBatch.hset(
+                                                    KEY,
+                                                    objectPath.get(bind.newObject, key),
+                                                    `${bind.newObject.id}`,
+                                                    CLIENT
+                                                )
+                                        }
+                                    }
+                                )
+    
+                        }
+                    )
+                }
+            )
+            this[CacheHash.cacheHash] = Array.from(arguments)
+        }
 
     }
 }
