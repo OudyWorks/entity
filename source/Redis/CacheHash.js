@@ -18,18 +18,22 @@ class CacheHash {
             return 'default'
         }
 
-        Entity.isExistInCacheHash = async function(key, value, context = {}) {
+        Entity.isExistInCacheHash = function(key, value, context = {}) {
             
-            await this[Entity.validateContext](context)
+            return this[Entity.validateContext](context).then(
+                () => {
 
-            let KEY = this[CacheHash.key](key, context),
-                CLIENT = this[CacheHash.client](context)
+                    let KEY = this[CacheHash.key](key, context),
+                        CLIENT = this[CacheHash.client](context)
 
-            if(key == 'id')
-                return RedisDBBatch.sismember(KEY, value, CLIENT)
-            else
-                return RedisDBBatch.hget(KEY, value, CLIENT)
-            
+                    if(key == 'id')
+                        return RedisDBBatch.sismember(KEY, value, CLIENT)
+                    else
+                        return RedisDBBatch.hget(KEY, value, CLIENT)
+                    
+                }
+            )
+
         }
 
         Entity.cacheHash = function() {
