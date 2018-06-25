@@ -108,6 +108,7 @@ class MongoDBEntity extends Entity {
         return $return.then(
             () => {
                 if(bind) {
+                    bind.isNew = !bind.oldObject.id
                     this.emit(
                         'save',
                         bind
