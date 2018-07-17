@@ -42,6 +42,15 @@ class MongoDBEntity extends Entity {
                 }
             )
 
+            for (let i = 0; i < Object.keys($set).length; i += 8) {
+                let temp = { $set: {} }
+                for (let j = i; j < i + 8; j++) {
+                    if (Object.keys($set)[j] === undefined) break
+                    temp.$set[Object.keys($set)[j]] = output.$set[Object.keys($set)[j]]
+                }
+                payload.push(temp)
+            }
+
             $set = Object.keys($set).length ? $set : undefined,
             $unset = Object.keys($unset).length ? $unset : undefined
             $pullAll = Object.keys($pullAll).length ? $pullAll : undefined
