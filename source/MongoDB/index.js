@@ -55,11 +55,7 @@ class MongoDBEntity extends Entity {
             $unset = Object.keys($unset).length ? $unset : undefined
             $pullAll = Object.keys($pullAll).length ? $pullAll : undefined
             
-            payload = [
-                {$set},
-                {$unset},
-                {$pullAll}
-            ]
+            payload.push($unset, $pullAll)
         
             if($set === undefined && $unset === undefined && $pullAll === undefined)
                 return $return
