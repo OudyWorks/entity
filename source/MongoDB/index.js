@@ -4,7 +4,7 @@ import objectPath from 'object-path'
 
 class MongoDBEntity extends Entity {
     bind(state, trackChange = true, bindObject = {}) {
-        if(state._id) {
+        if (state._id) {
             state.id = state._id
             delete state._id
         }
@@ -18,7 +18,7 @@ class MongoDBEntity extends Entity {
             database = this.constructor[MongoDBEntity.database](context),
             $return = Promise.resolve()
 
-        if(this.id && bind) {
+        if (this.id && bind) {
 
             let $set = {},
                 $unset = {},
@@ -27,9 +27,9 @@ class MongoDBEntity extends Entity {
             Object.keys(bind.difference).forEach(
                 key => {
 
-                    if(bind.difference[key] === undefined) {
-                        if(key.match(/\.\d+$/)) {
-                            if(!$pullAll[key.replace(/\.\d+$/, '')])
+                    if (bind.difference[key] === undefined) {
+                        if (key.match(/\.\d+$/)) {
+                            if (!$pullAll[key.replace(/\.\d+$/, '')])
                                 $pullAll[key.replace(/\.\d+$/, '')] = []
                             $pullAll[key.replace(/\.\d+$/, '')].push(
                                 objectPath.get(bind.oldObject, key)
@@ -51,20 +51,20 @@ class MongoDBEntity extends Entity {
                 }
                 payload.push(temp)
             }
-            
+
             $set = Object.keys($set).length ? $set : undefined,
-            $unset = Object.keys($unset).length ? $unset : undefined
+                $unset = Object.keys($unset).length ? $unset : undefined
             $pullAll = Object.keys($pullAll).length ? $pullAll : undefined
-            
-            payload.push($unset, $pullAll)
-        
-            if($set === undefined && $unset === undefined && $pullAll === undefined)
+
+            payload.push({ $unset }, { $pullAll })
+
+            if ($set === undefined && $unset === undefined && $pullAll === undefined)
                 return $return
 
         }
 
 
-        if(this.id)
+        if (this.id)
             $return = MongoDBBatch.update(
                 this.id,
                 payload,
@@ -72,7 +72,7 @@ class MongoDBEntity extends Entity {
                 database
             ).then(
                 () => {
-                    if(bind) {
+                    if (bind) {
                         this.emit(
                             'update',
                             bind
@@ -84,7 +84,7 @@ class MongoDBEntity extends Entity {
                     }
                 }
             )
-        
+
         else
             $return = MongoDBBatch.insert(
                 payload,
@@ -93,12 +93,12 @@ class MongoDBEntity extends Entity {
             ).then(
                 id => {
                     this.id = id.toHexString()
-                    if(bind)
+                    if (bind)
                         bind.id = this.id
                 }
             ).then(
                 () => {
-                    if(bind) {
+                    if (bind) {
                         this.emit(
                             'new',
                             bind
@@ -113,7 +113,7 @@ class MongoDBEntity extends Entity {
 
         return $return.then(
             () => {
-                if(bind) {
+                if (bind) {
                     bind.isNew = !bind.oldObject.id
                     this.emit(
                         'save',
@@ -153,7 +153,7 @@ class MongoDBEntity extends Entity {
             }
         )
     }
-    static loadAll(query = {query: {}, limit: 20, page: 1}, context = {}) {
+    static loadAll(query = { query: {}, limit: 20, page: 1 }, context = {}) {
         return this[Entity.validateContext](context).then(
             () => {
                 let collection = this[MongoDBEntity.collection](context),
@@ -218,7 +218,7 @@ class MongoDBEntity extends Entity {
 MongoDBEntity.collection = Symbol('collection')
 MongoDBEntity.database = Symbol('database')
 
-MongoDBEntity[MongoDBEntity.collection] = function(context) {
+MongoDBEntity[MongoDBEntity.collection] = function (context) {
     return this[Entity.context].map(
         key =>
             `${key}:${context[key]}`
@@ -226,7 +226,7 @@ MongoDBEntity[MongoDBEntity.collection] = function(context) {
     ).concat(this.pluralName.toLowerCase()).join(':')
 }
 
-MongoDBEntity[MongoDBEntity.database] = function(context) {
+MongoDBEntity[MongoDBEntity.database] = function (context) {
     return 'default'
 }
 
