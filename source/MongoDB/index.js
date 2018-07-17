@@ -41,6 +41,7 @@ class MongoDBEntity extends Entity {
 
                 }
             )
+            payload = []
 
             for (let i = 0; i < Object.keys($set).length; i += 8) {
                 let temp = { $set: {} }
@@ -50,7 +51,7 @@ class MongoDBEntity extends Entity {
                 }
                 payload.push(temp)
             }
-
+            
             $set = Object.keys($set).length ? $set : undefined,
             $unset = Object.keys($unset).length ? $unset : undefined
             $pullAll = Object.keys($pullAll).length ? $pullAll : undefined
