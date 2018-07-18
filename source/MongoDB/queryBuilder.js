@@ -38,7 +38,6 @@ function innerHandler(output, added, original, key, prop) {
     for (let innerKey in added[key]) {
         if (objectPath.get(original, prop + key)[parseInt(innerKey)]) {
             if (Array.isArray(objectPath.get(original, prop + key + "." + innerKey))) {
-                console.log(prop + key)
                 innerHandler(output, added[key], original, innerKey, prop + key + ".")
             }
             else {
