@@ -20,7 +20,7 @@ class MongoDBEntity extends Entity {
             $return = Promise.resolve()
 
         if (this.id && bind) {
-            payload = BuildQuery(bind.difference, bind.oldObject)
+            payload = BuildQuery(bind.diff, bind.oldObject)
             if (payload.length == 0)
                 return $return
         }
