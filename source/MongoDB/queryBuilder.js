@@ -18,7 +18,7 @@ function deletedHandler(output, deleted, original, prop = "") {
         }
         else if (prop && Array.isArray(objectPath.get(original, prop.slice(0, -1)))) {
             output.$unsetArray.push({ $unset: { [prop + key]: "" } })
-            output.$pull.push({ $pull: { [prop.slice(0, -1)]: null } })
+            output.$pull[prop.slice(0, -1)] = null
         }
         else output.$unset[prop + key] = ""
     }
@@ -57,15 +57,20 @@ function BuildQuery(diff, original) {
         $push: {},
         $unset: {},
         $unsetArray: [],
-        $pull: []
+        $pull: {}
     }
     let payload = []
     deletedHandler(output, diff.deleted, original)
     AddedHandler(output, diff.added, original)
     updatedHandler(output, diff.updated)
     for (let key in output) {
-        if (key == "$pull" || key == "$unsetArray") {
+        if (key == "$unsetArray") {
             payload.push(...output[key])
+        }
+        else if (key == "$pull") {
+            payload.push(...Object.keys(output.$pull)
+                .map(innerKey =>
+                    ({ $pull: { [innerKey]: null } })))
         }
         else if (Object.keys(output[key]).length > 0) {
             payload.push({ [key]: output[key] })
