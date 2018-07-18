@@ -5,7 +5,7 @@ import bind from './bind'
 import deepClone from 'lodash.clonedeep'
 import deepmerge from 'deepmerge'
 import {
-    diff
+    detailedDiff
 } from 'deep-object-diff'
 import flattenObj from 'flatten-obj'
 
@@ -62,7 +62,7 @@ class Entity {
 
                             bind(this, state, this.constructor.type)
 
-                            let difference = flatten(diff(oldObject, this)),
+                            let difference = detailedDiff(oldObject, this),
                                 changes = Object.keys(difference)
 
                             resolve(
