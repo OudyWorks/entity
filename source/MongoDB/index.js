@@ -1,6 +1,7 @@
 import Entity from '../index'
 import MongoDBBatch from '@oudyworks/drivers/MongoDB/Batch'
 import objectPath from 'object-path'
+import BuildQuery from './queryBuilder'
 
 class MongoDBEntity extends Entity {
     bind(state, trackChange = true, bindObject = {}) {
@@ -19,48 +20,9 @@ class MongoDBEntity extends Entity {
             $return = Promise.resolve()
 
         if (this.id && bind) {
-
-            let $set = {},
-                $unset = {},
-                $pullAll = {}
-
-            Object.keys(bind.difference).forEach(
-                key => {
-
-                    if (bind.difference[key] === undefined) {
-                        if (key.match(/\.\d+$/)) {
-                            if (!$pullAll[key.replace(/\.\d+$/, '')])
-                                $pullAll[key.replace(/\.\d+$/, '')] = []
-                            $pullAll[key.replace(/\.\d+$/, '')].push(
-                                objectPath.get(bind.oldObject, key)
-                            )
-                        } else
-                            $unset[key] = true
-                    } else
-                        $set[key] = objectPath.get(bind.newObject, key)
-
-                }
-            )
-            payload = []
-
-            for (let i = 0; i < Object.keys($set).length; i += 8) {
-                let temp = { $set: {} }
-                for (let j = i; j < i + 8; j++) {
-                    if (Object.keys($set)[j] === undefined) break
-                    temp.$set[Object.keys($set)[j]] = output.$set[Object.keys($set)[j]]
-                }
-                payload.push(temp)
-            }
-
-            $set = Object.keys($set).length ? $set : undefined,
-                $unset = Object.keys($unset).length ? $unset : undefined
-            $pullAll = Object.keys($pullAll).length ? $pullAll : undefined
-
-            payload.push({ $unset }, { $pullAll })
-
-            if ($set === undefined && $unset === undefined && $pullAll === undefined)
+            payload = BuildQuery(bind.difference, bind.oldObject)
+            if (payload.length == 0)
                 return $return
-
         }
 
 
