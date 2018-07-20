@@ -48,7 +48,7 @@ class Entity {
                             if(typeof this.validate == 'function') {
                                 bindObject.errors = {}
                                 bindObject.erred = {}
-                                this.validate(state, bindObject.errors).then(
+                                this.validate(state, bindObject.errors, this[Entity.context]).then(
                                     () => {
                                         bindObject.erred = !!Object.values(flatten(bindObject.errors)).filter(e => e).length
                                         resolve()
@@ -118,7 +118,7 @@ class Entity {
     bindAndSave(state) {
         return this.bind(state).then(
             bind =>
-                !bind.erred && this.save(bind)
+                bind.erred ? this : this.save(bind)
         )
     }
     static bindAndSave(id, state, context = {}) {
