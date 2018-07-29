@@ -135,8 +135,9 @@ class MongoDBEntity extends Entity {
         return this[Entity.validateContext](context).then(
             () => {
                 let collection = this[MongoDBEntity.collection](context),
-                    database = this[MongoDBEntity.database](context)
-                return MongoDBBatch.load(id, collection, database).then(
+                    database = this[MongoDBEntity.database](context),
+                    cache = this[MongoDBEntity.cache](context)
+                return MongoDBBatch.load(id, collection, database, cache).then(
                     object => {
                         let instance = new this()
                         instance[Entity.context] = context
@@ -151,8 +152,9 @@ class MongoDBEntity extends Entity {
         return this[Entity.validateContext](context).then(
             () => {
                 let collection = this[MongoDBEntity.collection](context),
-                    database = this[MongoDBEntity.database](context)
-                return MongoDBBatch.loadAll(query, collection, database).then(
+                    database = this[MongoDBEntity.database](context),
+                    cache = this[MongoDBEntity.cache](context)
+                return MongoDBBatch.loadAll(query, collection, database, cache).then(
                     result => {
                         result.list = result.list.map(
                             document => {
@@ -172,8 +174,9 @@ class MongoDBEntity extends Entity {
         return this[Entity.validateContext](context).then(
             () => {
                 let collection = this[MongoDBEntity.collection](context),
-                    database = this[MongoDBEntity.database](context)
-                return MongoDBBatch.loadMany(ids, collection, database).then(
+                    database = this[MongoDBEntity.database](context),
+                    cache = this[MongoDBEntity.cache](context)
+                return MongoDBBatch.loadMany(ids, collection, database, cache).then(
                     result => {
                         result.map(
                             document => {
@@ -193,8 +196,9 @@ class MongoDBEntity extends Entity {
         return this[Entity.validateContext](context).then(
             () => {
                 let collection = this[MongoDBEntity.collection](context),
-                    database = this[MongoDBEntity.database](context)
-                return MongoDBBatch.count(query, collection, database)
+                    database = this[MongoDBEntity.database](context),
+                    cache = this[MongoDBEntity.cache](context)
+                return MongoDBBatch.count(query, collection, database, cache)
             }
         )
     }
@@ -202,8 +206,9 @@ class MongoDBEntity extends Entity {
         return this[Entity.validateContext](context).then(
             () => {
                 let collection = this[MongoDBEntity.collection](context),
-                    database = this[MongoDBEntity.database](context)
-                return MongoDBBatch.clear(id, collection, database)
+                    database = this[MongoDBEntity.database](context),
+                    cache = this[MongoDBEntity.cache](context)
+                return MongoDBBatch.clear(id, collection, database, cache)
             }
         )
     }
@@ -211,6 +216,7 @@ class MongoDBEntity extends Entity {
 
 MongoDBEntity.collection = Symbol('collection')
 MongoDBEntity.database = Symbol('database')
+MongoDBEntity.cache = Symbol('cache')
 
 MongoDBEntity[MongoDBEntity.collection] = function(context) {
     return this[Entity.context].map(
@@ -222,6 +228,10 @@ MongoDBEntity[MongoDBEntity.collection] = function(context) {
 
 MongoDBEntity[MongoDBEntity.database] = function(context) {
     return 'default'
+}
+
+MongoDBEntity[MongoDBEntity.cache] = function(context) {
+    return false
 }
 
 export default MongoDBEntity
