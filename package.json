@@ -4,7 +4,9 @@
   "description": "Entity for everything :D",
   "main": "index.js",
   "scripts": {
-    "build": "babel source --out-dir npm"
+    "build": "babel source --out-dir npm",
+    "test": "jest",
+    "watch": "jest --watch tests"
   },
   "repository": {
     "type": "git",
@@ -29,8 +31,13 @@
     "deep-object-diff": "^1.1.0",
     "deepmerge": "^2.1.1",
     "flatten-obj": "^3.1.1",
+    "jest": "^23.4.2",
     "lodash.clonedeep": "^4.5.0",
     "object-path": "^0.11.4",
     "plural": "^1.1.0"
+  },
+  "jest": {
+    "verbose": true,
+    "testURL": "http://localhost/"
   }
 }

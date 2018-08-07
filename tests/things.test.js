@@ -1,11 +1,10 @@
-import Test from "./Test"
+import Test from './Test'
 import MongoDB from '@oudyworks/drivers/MongoDB'
-import { ObjectId } from 'mongodb'
 
 let TESTS = null
 
 async function _Expect(obj) {
-    let end_obj = await TESTS.findOne({ _id: ObjectId(obj.id) })
+    let end_obj = await TESTS.findOne({ _id: MongoDB.ObjectID(obj.id) })
     delete end_obj._id
     return expect(JSON.stringify(end_obj)).toBe(JSON.stringify(obj.mongoDBDocument()))
 }
