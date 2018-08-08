@@ -199,3 +199,9 @@ it('Remove objects from an arrayOfObjects field in an object in arrayOfObjects',
         ]
     })
 })
+
+it('The ZERO test', () => {
+    return runTest({
+        arrayOfArrays:  [[0, 3, 4, 5], [0, 1, 2], 1, [{first : "Y", last : "O"}]]
+    })
+})
