@@ -1,6 +1,6 @@
 {
   "name": "@oudyworks/entity",
-  "version": "1.0.71",
+  "version": "1.1.1",
   "description": "Entity for everything :D",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,10 @@
   "keywords": [
     "entity"
   ],
-  "author": "Ayoub Oudmane <ayoub@oudmane.me>",
+  "author": "Ayoub Oudmane (https://github.com/Oudmane)",
+  "contributors": [
+    "Aziz Tafougalti (https://github.com/AzizTafougalti)"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/OudyWorks/entity/issues"
