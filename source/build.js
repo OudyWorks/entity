@@ -8,7 +8,7 @@ export default function build(object, type, defaultValues = {}) {
                 case 'function':
                     switch(type[key].name) {
                         case 'Array':
-                            object[key] = []
+                            object[key] = defaultValues[key] || []
                             break
                         case 'Object':
                             object[key] = new type[key](defaultValues[key] || {})
