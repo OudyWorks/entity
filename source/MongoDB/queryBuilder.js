@@ -91,7 +91,6 @@ function BuildQuery(diff, original, edited) {
         }
     }
 
-    console.log(payload)
     return payload
 }
 
