@@ -63,7 +63,7 @@ class Entity {
                             bind(this, state, this.constructor.type)
 
                             let difference = flatten(_diff(oldObject, this)),
-                                diff = detailedDiff(oldObject, this),
+                                // diff = detailedDiff(oldObject, this),
                                 changes = Object.keys(difference)
 
                             resolve(
@@ -73,7 +73,7 @@ class Entity {
                                         oldObject,
                                         newObject: this,
                                         difference,
-                                        diff,
+                                        // diff,
                                         changes,
                                         changed: !!changes.length,
                                         context: this[Entity.context],
@@ -120,7 +120,7 @@ class Entity {
     bindAndSave(state) {
         return this.bind(state).then(
             bind =>
-                bind.erred ? this : this.save(bind)
+                (bind.erred || !bind.changes.length) ? this : this.save(bind)
         )
     }
     static bindAndSave(id, state, context = {}) {
