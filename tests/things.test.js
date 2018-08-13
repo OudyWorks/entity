@@ -21,6 +21,110 @@ it('MongoDB', async () => {
     expect(1).toBe(1)
 })
 
+it('array to object', () => {
+    return runTest({
+        arrayOfObjects: [
+            {
+                name: "Name 1",
+                age: 10,
+                list: {name : "jhon", last_name : "lent"}
+            },
+            {
+                name: "Name 2",
+                age: 10
+            }
+        ]
+    })
+})
+
+it('Test 1', () => {
+    return runTest({
+        arrayOfArrays: [[0, 3, 4], [0, 1, 2, 3, 4, 10, 10], 1],
+        arrayOfStrings: [
+            'Value 1', 'Value 2'
+        ],
+        arrayOfObjects: [
+            {
+                name: { info: ["Name 1"] },
+                age: { info: [10] },
+                list: { name: "jhon", last: "lent" },
+                obj : [{likes : 10, deslikes : 10}]
+            },
+            [0, 1, 2]
+        ]
+    })
+})
+
+it('set unset', () => {
+    return runTest({
+        arrayOfObjects: [
+            {
+                name: "Name 1",
+                age : 20
+            },
+            [0,1,2]
+        ]
+    })
+})
+
+it('set push', () => {
+    return runTest({
+        arrayOfArrays : [[0, 1, 2, 3, 4, [0,0]], [0, 1, 2, 3, 5], 12]
+        //arrayOfArrays: [[0, 1, 2, 3, 4, [0, 0]], [0, 1, 2, 3, 4]],
+    })
+})
+
+it('set push 2', () => {
+    return runTest({
+        arrayOfArrays : [[0, 1, 2, 3, 4, [0,1]], [0, 1, 2, 3, 4],1],
+    })
+})
+
+it('unset push', () => {
+    return runTest({
+        arrayOfArrays : [[0, 1, 2, 3, 4], [0, 1, 2, 3, 4] , 1],
+    })
+})
+
+it('pull push', () => {
+    return runTest({
+        arrayOfArrays: [[0, 1, 2, 3, 4, [0]], [0, 1, 2, 3, 4], 1],
+    })
+})
+
+it('unset push 2', () => {
+    return runTest({
+        arrayOfArrays: [[0, 1, 2, 3], [0, 1, 2, 3, 4], 1],
+    })
+})
+
+it('unset pull', () => {
+    return runTest({
+        arrayOfStrings: [
+            'Value 1', 'Value 2'
+        ]
+    })
+})
+
+ it('push push', () => {
+    return runTest({
+        arrayOfArrays: [[0, 1, 2, 3, 4, [0, 0, 0]], [0, 1, 2, 3, 4], 1],
+        //arrayOfArrays: [[0, 1, 2, 3, 4, [0, 0]], [0, 1, 2, 3, 4]],
+    })
+})
+
+it('pull pull', () => {
+    return runTest({
+        arrayOfArrays: [[0, 1, [0,1]]]
+    })
+})
+
+it('Remove fields from object', () => {
+    return runTest({
+        object: {}
+    })
+})
+
 it('Change Number', () => {
     return runTest({
         number: 123

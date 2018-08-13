@@ -38,27 +38,20 @@ Test.defaultValues = {
             height : 100
         }
     ]},
-    empty_object: {},
     arrayOfStrings: [
         'Value 1', 'Value 2', 'Value 3', 'Value 4'
     ],
-    arrayOfArrays : [[0, 1, 2, 3, 4], [0, 1, 2]],
+    arrayOfArrays: [[0, 1, 2, 3, 4, [0, 0]], [0, 1, 2, 3, 4]],
     arrayOfNumbers: [0, 1, 0, 3, 0],
     arrayOfObjects: [
         {
             name: "Name 1",
-            age: 10
+            age: 10,
+            list : [1, 2, 3],
+            obj : {likes : 10, deslikes : 10}
         },
         {
             name: "Name 2",
-            age: 10
-        },
-        {
-            name: "Name 3",
-            age: 10
-        },
-        {
-            name: "Name 4",
             age: 10
         }
     ]
