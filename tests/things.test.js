@@ -15,7 +15,7 @@ function runTest(state) {
 }
 
 it('MongoDB', async () => {
-    let database = await MongoDB.configure("mongodb://localhost/", "test")
+    let database = await MongoDB.configure("mongodb://localhost:27017/", "test")
     TESTS = database.collection("tests")
     await TESTS.drop()
     expect(1).toBe(1)
