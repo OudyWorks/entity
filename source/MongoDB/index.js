@@ -19,11 +19,11 @@ class MongoDBEntity extends Entity {
             database = this.constructor[MongoDBEntity.database](context),
             $return = Promise.resolve()
 
-        // if (this.id && bind) {
-        //     payload = BuildQuery(bind.diff, bind.oldObject, bind.newObject)
-        //     if (payload.length == 0)
-        //         return $return
-        // }
+        if (this.id && bind) {
+            payload = BuildQuery(bind.diff, bind.oldObject, bind.newObject)
+            // if (payload.length == 0)
+                // return $return
+        }
 
         if (this.id)
             $return = MongoDBBatch.update(
