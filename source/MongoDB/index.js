@@ -17,12 +17,12 @@ class MongoDBEntity extends Entity {
             context = this[Entity.context],
             collection = this.constructor[MongoDBEntity.collection](context),
             database = this.constructor[MongoDBEntity.database](context),
-            $return = Promise.resolve()
+            $return = Promise.resolve(this)
 
         if (this.id && bind) {
             payload = BuildQuery(bind.diff, bind.oldObject, bind.newObject)
-            // if (payload.length == 0)
-                // return $return
+            if (payload.length == 0)
+                return $return
         }
 
         if (this.id)
