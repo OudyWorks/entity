@@ -63,7 +63,7 @@ class CacheHash {
                     this.on(
                         'new',
                         bind => {
-                            let KEY = this[CacheHash.key](key, bind.newObject[Entity.context]),
+                            let KEY = this[CacheHash.key]('id', bind.newObject[Entity.context]),
                                 CLIENT = this[CacheHash.client](bind.newObject[Entity.context])
                             RedisDBBatch.sadd(
                                 KEY,
