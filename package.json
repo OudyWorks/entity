@@ -30,7 +30,7 @@
     "babel-preset-es2015": "^6.24.1"
   },
   "dependencies": {
-    "@oudyworks/drivers": "^1.0.29",
+    "@oudyworks/drivers": "^1.0.30",
     "@oudyworks/ttlmap": "^1.0.5",
     "deep-object-diff": "^1.1.0",
     "deepmerge": "^2.1.1",
