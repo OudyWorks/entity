@@ -1,6 +1,5 @@
 import Entity from '../index'
 import MongoDBBatch from '@oudyworks/drivers/MongoDB/Batch'
-import objectPath from 'object-path'
 import BuildQuery from './queryBuilder'
 
 class MongoDBEntity extends Entity {
