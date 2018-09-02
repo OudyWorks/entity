@@ -58,46 +58,56 @@ class CacheHash {
         Entity.__defineSetter__(
             CacheHash.cacheHash,
             function(keys) {
-                keys.forEach(
-                    key => {
 
-                        if(key == 'id')
-                            this.on(
-                                'new',
-                                bind => {
-                                    let KEY = this[CacheHash.key](key, bind.newObject[Entity.context]),
-                                        CLIENT = this[CacheHash.client](bind.newObject[Entity.context])
-                                    RedisDBBatch.sadd(
-                                        KEY,
-                                        `${bind.newObject.id}`,
-                                        CLIENT
-                                    )
-                                }
+                if(keys.includes('id'))
+                    this.on(
+                        'new',
+                        bind => {
+                            let KEY = this[CacheHash.key](key, bind.newObject[Entity.context]),
+                                CLIENT = this[CacheHash.client](bind.newObject[Entity.context])
+                            RedisDBBatch.sadd(
+                                KEY,
+                                `${bind.newObject.id}`,
+                                CLIENT
                             )
+                        }
+                    )
+                
+                this.on(
+                    'save',
+                    bind => {
 
-                        else
-                            this.on(
-                                'save',
-                                async bind => {
-                                    if(bind.changes.includes(key)) {
-                                        let KEY = this[CacheHash.key](key, bind.newObject[Entity.context]),
-                                            CLIENT = this[CacheHash.client](bind.newObject[Entity.context])
-                                        if(objectPath.get(bind.oldObject, key))
-                                            await RedisDBBatch.hdel(
-                                                KEY,
-                                                objectPath.get(bind.oldObject, key),
-                                                CLIENT
-                                            )
-                                        if(objectPath.get(bind.newObject, key))
-                                            await RedisDBBatch.hset(
-                                                KEY,
-                                                objectPath.get(bind.newObject, key),
-                                                `${bind.newObject.id}`,
-                                                CLIENT
-                                            )
-                                    }
+                        keys.filter(key => key != 'id').forEach(
+                            async key => {
+        
+                                if(bind.changes.includes(key)) {
+
+                                    const KEY = this[CacheHash.key](key, bind.newObject[Entity.context]),
+                                        CLIENT = this[CacheHash.client](bind.newObject[Entity.context]),
+                                        _key = [CLIENT, KEY].join(':')
+
+                                    if(this[CacheHash.cache])
+                                        cache.delete(_key)
+
+                                    if(objectPath.get(bind.oldObject, key))
+                                        await RedisDBBatch.hdel(
+                                            KEY,
+                                            objectPath.get(bind.oldObject, key),
+                                            CLIENT
+                                        )
+
+                                    if(objectPath.get(bind.newObject, key))
+                                        await RedisDBBatch.hset(
+                                            KEY,
+                                            objectPath.get(bind.newObject, key),
+                                            `${bind.newObject.id}`,
+                                            CLIENT
+                                        )
+
                                 }
-                            )
+        
+                            }
+                        )
 
                     }
                 )
