@@ -1,5 +1,8 @@
 import RedisDBBatch from '@oudyworks/drivers/Redis/Batch'
 import objectPath from 'object-path'
+import TTLMap from '@oudyworks/ttlmap'
+
+const cache = new TTLMap()
 
 class CacheHash {
     static use(Entity) {
@@ -24,12 +27,25 @@ class CacheHash {
                 () => {
 
                     let KEY = this[CacheHash.key](key, context),
-                        CLIENT = this[CacheHash.client](context)
+                        CLIENT = this[CacheHash.client](context),
+                        _key = [CLIENT, KEY].join(':'),
+                        $return = this[CacheHash.cache] && cache.get(_key)
 
-                    if(key == 'id')
-                        return RedisDBBatch.sismember(KEY, value, CLIENT)
-                    else
-                        return RedisDBBatch.hget(KEY, value, CLIENT)
+                    if($return)
+                        return $return
+
+                    $return = RedisDBBatch[key == 'id' ? 'sismember' : 'hget'](KEY, value, CLIENT).then(
+                        $return => {
+                            if(this[CacheHash.cache])
+                                cache.set(_key, $return)
+                            return $return
+                        }
+                    )
+
+                    if(this[CacheHash.cache])
+                        cache.set(_key, $return)
+
+                    return $return
                     
                 }
             )
@@ -88,11 +104,14 @@ class CacheHash {
             }
         )
 
+        Entity[CacheHash.cache] = true
+
     }
 }
 
 CacheHash.client = Symbol('client')
 CacheHash.key = Symbol('key')
 CacheHash.cacheHash = Symbol('cacheHash')
+CacheHash.cache = Symbol('cache')
 
 export default CacheHash
