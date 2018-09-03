@@ -29,10 +29,10 @@ class CacheHash {
                     let KEY = this[CacheHash.key](key, context),
                         CLIENT = this[CacheHash.client](context),
                         _key = [CLIENT, KEY].join(':'),
-                        $return
+                        $return = this[CacheHash.cache] && cache.get(_key)
 
-                    if(cache.has(_key))
-                        return cache.get(_key)
+                    if($return)
+                        return $return
 
                     $return = RedisDBBatch[key == 'id' ? 'sismember' : 'hget'](KEY, value, CLIENT).then(
                         $return => {
