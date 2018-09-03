@@ -79,6 +79,7 @@ function BuildQuery(diff, original, edited) {
     deletedHandler(output, diff.deleted, original, edited)
     updatedHandler(output, diff.updated, original, edited)
     addedHandler(output, diff.added, original, edited)
+    // resolveConflict(output, payload)
 
     for (let key in output) {
         if (key == "$pull" || key == "$push") {
@@ -93,5 +94,3 @@ function BuildQuery(diff, original, edited) {
 
     return payload
 }
-
-module.exports = BuildQuery
