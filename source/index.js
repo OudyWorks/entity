@@ -138,6 +138,9 @@ class Entity {
 Entity.context = Symbol('context')
 Entity[Entity.context] = []
 
+Entity.useBind = Symbol('useBind')
+Entity[Entity.useBind] = true
+
 Entity.validateContext = Symbol('context')
 Entity[Entity.validateContext] = function (context) {
     return Promise.resolve(context)

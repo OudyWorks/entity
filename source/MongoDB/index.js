@@ -18,7 +18,7 @@ class MongoDBEntity extends Entity {
             database = this.constructor[MongoDBEntity.database](context),
             $return = Promise.resolve(this)
 
-        if (this.id && bind) {
+        if (this.constructor[MongoDBEntity.useBind] && this.id && bind) {
             payload = BuildQuery(bind.diff, bind.oldObject, bind.newObject)
             if (payload.length == 0)
                 return $return
