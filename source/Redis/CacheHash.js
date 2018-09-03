@@ -59,6 +59,8 @@ class CacheHash {
             CacheHash.cacheHash,
             function(keys) {
 
+                this[CacheHash.keys] = keys
+
                 if(keys.includes('id'))
                     this.on(
                         'new',
@@ -123,5 +125,6 @@ CacheHash.client = Symbol('client')
 CacheHash.key = Symbol('key')
 CacheHash.cacheHash = Symbol('cacheHash')
 CacheHash.cache = Symbol('cache')
+CacheHash.keys = Symbol('keys')
 
 export default CacheHash
