@@ -21,6 +21,45 @@ it('MongoDB', async () => {
     expect(1).toBe(1)
 })
 
+it('RANDOM', () => {
+    return runTest({
+        string: 'Placeholder',
+        number: 10,
+        float: 9.9,
+        object: {
+            number: { number: 20 },
+            arrayOfStrings: [
+                15,
+                'Value 1', { '0': '10', '1': '1' }
+            ],
+            arrayOfNumbers: [{ 'num': 1 }, 0],
+            arrayOfObjects: [
+                {
+                    name: "New name",
+                    age: {between : [10 , 20]},
+                    list: [1, 2, 30],
+                    obj: [{ likes: 3, alerts : 14 }, { likes: 10, deslikes: 10 }]
+                }
+            ]
+        },
+        arrayOfStrings: [
+            'Value 1', [0, 0, 50], 'Value 3', ['Value 4']
+        ],
+        arrayOfArrays: [[0, 1, [0, 1, 'Stuff', 3, 4], 2, [0]], [0, 1, [0, 1, 'hello', 4], 2, 3, 4], [0, 3, 4, {e : 'e'}]],
+        arrayOfNumbers: [0, 1, 0, 3, [0, 1, 2, 3, 4], 0],
+        arrayOfObjects: [
+            {
+                list: [1, [0, 1, 2, 3, 4]],
+                obj: [[0, 0, 50], { likes: 10, alerts: 10 }, { alerts: 10, deslikes: 10 }]
+            },
+            {
+                name: [0, 0, 50],
+                age: [0, 0, 50]
+            }
+        ]
+    })
+})
+
 it('array to object', () => {
     return runTest({
         arrayOfObjects: [

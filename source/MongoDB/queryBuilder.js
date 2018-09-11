@@ -1,10 +1,12 @@
 const { get } = require("object-path")
+//const util = require("util")
 
 let isObject = obj => (obj instanceof Object) && !(obj instanceof Array)
 let isArray = obj => Array.isArray(obj)
 let isObjectEmpty = obj => Object.keys(obj).length == 0
 let typeOf = (obj, type) => typeof obj == type
 let sliceFromEnd = (str, sub) => str.substring(0, str.lastIndexOf(sub))
+//let log = msg => console.log(util.inspect(msg, false, null))
 
 function removeEmptyFields(obj) {
     for (let key in obj)
@@ -39,13 +41,11 @@ function deletedHandler(output, deleted, original, edited, prop = "") {
         if (typeOf(deleted[key], "object")) {
             deletedHandler(output, deleted[key], original, edited, prop + key + ".")
         }
-        else if (prop && isArray(get(original, prop.slice(0, -1))) && isArray(get(edited, prop.slice(0, -1)))) {
-            output.$unset[prop + key] = ""
-            output.$pull[prop.slice(0, -1)] = null
+        else if (isArray(get(original, prop.slice(0, -1))) && isArray(get(edited, prop.slice(0, -1)))) {
+            output.$push[prop.slice(0, -1)] = { '$each': [], '$slice': get(edited, prop.slice(0, -1)).length }
+            break
         }
-        else if (prop && isObject(get(original, prop.slice(0, -1)))) {
-            output.$unset[prop + key] = ""
-        }
+        else output.$unset[prop + key] = ""
     }
 }
 
@@ -98,12 +98,6 @@ function resolveConflict(output, payload) {
             }
         }
         for (let unset_key in output.$unset) {
-            for (let pull_key in output.$pull) {
-                if (sliceFromEnd(unset_key, '.') == pull_key) {
-                    assign(rest_output, "$pull", pull_key, output)
-                    //log('conflict between $unset and $pull')
-                }
-            }
             for (let push_key in output.$push) {
                 if (unset_key.indexOf(push_key) > -1) {
                     assign(rest_output, "$push", push_key, output)
@@ -119,24 +113,9 @@ function resolveConflict(output, payload) {
                 }
             }
             for (let unset_key in output.$unset) {
-                if (unset_key.indexOf(set_key) > -1) {
+                if (sliceFromEnd(unset_key, '.') == set_key) {
                     delete output.$unset[unset_key]
                     //log('conflict between $set and $unset')
-                }
-            }
-        }
-        pullLoop: for (let pull_key in output.$pull) {
-            for (let inner_pull_key in output.$pull) {
-                if (pull_key != inner_pull_key && pull_key.indexOf(inner_pull_key) > -1) {
-                    assign(rest_output, "$pull", inner_pull_key, output)
-                    //log('conflict between $pull and $pull')
-                    break pullLoop
-                }
-            }
-            for (let push_key in output.$push) {
-                if (pull_key.indexOf(push_key) > -1) {
-                    assign(rest_output, "$push", push_key, output)
-                    //log('conflict between $pull and $push')
                 }
             }
         }
@@ -147,28 +126,13 @@ function resolveConflict(output, payload) {
 }
 
 module.exports = function BuildQuery(diff, original, edited) {
-    let output = {
-        $set: {},
-        $push: {},
-        $unset: {},
-        $pull: {}
-    }, payload = []
+    let output = { $set: {}, $push: {}, $unset: {} }
+    let payload = []
 
     deletedHandler(output, diff.deleted, original, edited)
     updatedHandler(output, diff.updated, original, edited)
     addedHandler(output, diff.added, original, edited)
-    // resolveConflict(output, payload)
-    
-    for (let key in output) {
-        if (key == "$pull" || key == "$push") {
-            payload.push(...Object.keys(output[key])
-                .map(innerKey =>
-                    ({ [key]: { [innerKey]: output[key][innerKey] } })))
-        }
-        else if (Object.keys(output[key]).length > 0) {
-            payload.push({ [key]: output[key] })
-        }
-    }
+    resolveConflict(output, payload)
 
     return payload
 }
