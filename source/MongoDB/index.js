@@ -144,7 +144,7 @@ class MongoDBEntity extends Entity {
                     cache = this[MongoDBEntity.cache](context)
                 return MongoDBBatch.loadMany(ids, collection, database, cache).then(
                     result => {
-                        result.map(
+                        return result.map(
                             document => {
                                 let instance = new this()
                                 instance[Entity.context] = context
@@ -152,7 +152,6 @@ class MongoDBEntity extends Entity {
                                 return instance
                             }
                         )
-                        return result
                     }
                 )
             }
@@ -196,7 +195,7 @@ MongoDBEntity[MongoDBEntity.database] = function (context) {
     return 'default'
 }
 
-MongoDBEntity[MongoDBEntity.cache] = function(context) {
+MongoDBEntity[MongoDBEntity.cache] = function (context) {
     return false
 }
 
