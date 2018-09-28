@@ -10,6 +10,35 @@ class MongoDBEntity extends Entity {
         }
         return super.bind(state, trackChange, bindObject)
     }
+
+    upsert(bind) {
+        let payload = this.mongoDBDocument(),
+            context = this[Entity.context],
+            collection = this.constructor[MongoDBEntity.collection](context),
+            database = this.constructor[MongoDBEntity.database](context),
+            $return = MongoDBBatch.upsert(this.id, payload, collection, database)
+
+        return $return.then(
+            () => {
+                if (bind) {
+                    bind.isNew = !bind.oldObject.id
+                    this.emit(
+                        'save',
+                        bind
+                    )
+                    this.constructor.emit(
+                        'save',
+                        bind
+                    )
+                }
+                return this.constructor.clear(this.id, context).then(
+                    () =>
+                        this
+                )
+            }
+        )
+    }
+
     save(bind) {
 
         let payload = this.mongoDBDocument(),
