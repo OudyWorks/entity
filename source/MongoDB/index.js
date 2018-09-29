@@ -10,6 +10,35 @@ class MongoDBEntity extends Entity {
         }
         return super.bind(state, trackChange, bindObject)
     }
+
+    upsert(bind) {
+        let payload = this.mongoDBDocument(),
+            context = this[Entity.context],
+            collection = this.constructor[MongoDBEntity.collection](context),
+            database = this.constructor[MongoDBEntity.database](context),
+            $return = MongoDBBatch.upsert(this.id, payload, collection, database)
+
+        return $return.then(
+            () => {
+                if (bind) {
+                    bind.isNew = !bind.oldObject.id
+                    this.emit(
+                        'save',
+                        bind
+                    )
+                    this.constructor.emit(
+                        'save',
+                        bind
+                    )
+                }
+                return this.constructor.clear(this.id, context).then(
+                    () =>
+                        this
+                )
+            }
+        )
+    }
+
     save(bind) {
 
         let payload = this.mongoDBDocument(),
@@ -144,7 +173,7 @@ class MongoDBEntity extends Entity {
                     cache = this[MongoDBEntity.cache](context)
                 return MongoDBBatch.loadMany(ids, collection, database, cache).then(
                     result => {
-                        result.map(
+                        return result.map(
                             document => {
                                 let instance = new this()
                                 instance[Entity.context] = context
@@ -152,7 +181,6 @@ class MongoDBEntity extends Entity {
                                 return instance
                             }
                         )
-                        return result
                     }
                 )
             }
@@ -196,7 +224,7 @@ MongoDBEntity[MongoDBEntity.database] = function (context) {
     return 'default'
 }
 
-MongoDBEntity[MongoDBEntity.cache] = function(context) {
+MongoDBEntity[MongoDBEntity.cache] = function (context) {
     return false
 }
 
