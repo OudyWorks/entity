@@ -1,15 +1,17 @@
 import Test from "./Test"
 import MongoDB from '@oudyworks/drivers/MongoDB'
 
-let TESTS = null
+let TESTS = null,
+    test = 1
 
 async function _Expect(obj) {
-    let end_obj = await TESTS.findOne({ _id: MongoDB.ObjectID(obj.id) })
+    let end_obj = await TESTS.findOne({ _id: obj.id.match(MongoDB.IDRegex) ? MongoDB.ObjectID(obj.id) : obj.id })
     delete end_obj._id
-    return expect(JSON.stringify(end_obj)).toBe(JSON.stringify(obj.mongoDBDocument()))
+    return expect(JSON.stringify(end_obj)).toBe(JSON.stringify(obj.mongoDBDocument(true)))
 }
 function runTest(state) {
-    return Test.bindAndSave('', {})
+    // return Test.bindAndUpsert(['test', test++].join('_'), state)
+    return Test.bindAndSave(['test', test++].join('_'), {})
         .then(obj => obj.bindAndSave(state))
         .then(_Expect)
 }

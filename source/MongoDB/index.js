@@ -3,6 +3,11 @@ import MongoDBBatch from '@oudyworks/drivers/MongoDB/Batch'
 import BuildQuery from './queryBuilder'
 
 class MongoDBEntity extends Entity {
+    constructor() {
+        super()
+        this[MongoDBEntity.loaded] = false
+        this[MongoDBEntity.id] = undefined
+    }
     bind(state, trackChange = true, bindObject = {}) {
         if (state._id) {
             state.id = state._id
@@ -81,7 +86,7 @@ class MongoDBEntity extends Entity {
                 database
             ).then(
                 id => {
-                    this.id = id.toHexString()
+                    this.id = id.toString()
                     if (bind)
                         bind.id = this.id
                 }
@@ -121,8 +126,10 @@ class MongoDBEntity extends Entity {
         )
 
     }
-    mongoDBDocument() {
+    mongoDBDocument(noID = false) {
         let document = JSON.parse(this.json())
+        if(this.constructor[MongoDBEntity.customID](this[Entity.context]) && !noID)
+            document._id = this[MongoDBEntity.id] || document.id
         delete document.id
         return document
     }
@@ -137,6 +144,9 @@ class MongoDBEntity extends Entity {
                         let instance = new this()
                         instance[Entity.context] = context
                         instance.bind(object || {}, false)
+                        instance[MongoDBEntity.id] = id
+                        if(object)
+                            instance[MongoDBEntity.loaded] = true
                         return instance
                     }
                 )
@@ -156,6 +166,7 @@ class MongoDBEntity extends Entity {
                                 let instance = new this()
                                 instance[Entity.context] = context
                                 instance.bind(document || {}, false)
+                                instance[MongoDBEntity.loaded] = true
                                 return instance
                             }
                         )
@@ -174,10 +185,13 @@ class MongoDBEntity extends Entity {
                 return MongoDBBatch.loadMany(ids, collection, database, cache).then(
                     result => {
                         return result.map(
-                            document => {
+                            (document, i) => {
                                 let instance = new this()
                                 instance[Entity.context] = context
                                 instance.bind(document || {}, false)
+                                instance[MongoDBEntity.id] = ids[i]
+                                if(document)
+                                    instance[MongoDBEntity.loaded] = true
                                 return instance
                             }
                         )
@@ -211,6 +225,9 @@ class MongoDBEntity extends Entity {
 MongoDBEntity.collection = Symbol('collection')
 MongoDBEntity.database = Symbol('database')
 MongoDBEntity.cache = Symbol('cache')
+MongoDBEntity.customID = Symbol('customID')
+MongoDBEntity.loaded = Symbol('loaded')
+MongoDBEntity.id = Symbol('id')
 
 MongoDBEntity[MongoDBEntity.collection] = function (context) {
     return this[Entity.context].map(
@@ -225,6 +242,9 @@ MongoDBEntity[MongoDBEntity.database] = function (context) {
 }
 
 MongoDBEntity[MongoDBEntity.cache] = function (context) {
+    return false
+}
+MongoDBEntity[MongoDBEntity.customID] = function (context) {
     return false
 }
 

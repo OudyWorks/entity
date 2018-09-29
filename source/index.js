@@ -123,6 +123,13 @@ class Entity {
                 (bind.erred || !bind.changes.length) ? this : this.save(bind)
         )
     }
+    bindAndUpsert(state) {
+        return this.bind(state).then(
+            bind =>
+                (bind.erred || !bind.changes.length) ? this : this.upsert(bind)
+        )
+    }
+
     static bindAndSave(id, state, context = {}) {
         return this.load(id, context).then(
             object =>
@@ -130,6 +137,19 @@ class Entity {
                     () =>
                         object
                 )
+        )
+    }
+    static bindAndUpsert(id, state, context = {}) {
+        return this.load(id, context).then(
+            object =>
+                object.id ? object.bindAndSave(state).then(
+                        () =>
+                            object
+                    )
+                : object.bindAndUpsert({
+                    id,
+                    ...state
+                })
         )
     }
 

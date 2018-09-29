@@ -57,4 +57,6 @@ Test.defaultValues = {
     ]
 }
 
+Test[Entity.customID] = () => true
+
 export default Test
