@@ -173,9 +173,9 @@ ElasticSearchEntity[ElasticSearchEntity._type] = function (context) {
 ElasticSearchEntity[ElasticSearchEntity._index] = function (context) {
     return this[Entity.context].map(
         key =>
-            `${key}:${context[key]}`
+            `${key}_${context[key]}`
 
-    ).concat(this.pluralName.toLowerCase()).join(':')
+    ).concat(this.pluralName.toLowerCase()).join('_')
 }
 ElasticSearchEntity[ElasticSearchEntity.cache] = function (context) {
     return false
