@@ -9,6 +9,10 @@ import {
 } from 'deep-object-diff'
 import flattenObj from 'flatten-obj'
 
+const $context = Symbol('context')
+const $useBind = Symbol('useBind')
+const $validateContext = Symbol('context')
+
 const emitter = new EventEmitter(),
     flatten = flattenObj()
 
@@ -18,7 +22,7 @@ class Entity {
 
         this.build()
 
-        this[Entity.context] = {}
+        this[$context] = {}
 
         let emitter = new EventEmitter()
 
@@ -48,7 +52,7 @@ class Entity {
                             if (typeof this.validate == 'function') {
                                 bindObject.errors = {}
                                 bindObject.erred = {}
-                                this.validate(state, bindObject.errors, this[Entity.context]).then(
+                                this.validate(state, bindObject.errors, this[$context]).then(
                                     () => {
                                         bindObject.erred = !!Object.values(flatten(bindObject.errors)).filter(e => e).length
                                         resolve()
@@ -76,7 +80,7 @@ class Entity {
                                         diff,
                                         changes,
                                         changed: !!changes.length,
-                                        context: this[Entity.context],
+                                        context: this[$context],
                                         id: this.id
                                     }
                                 )
@@ -143,27 +147,26 @@ class Entity {
         return this.load(id, context).then(
             object =>
                 object.id ? object.bindAndSave(state).then(
-                        () =>
-                            object
-                    )
-                : object.bindAndUpsert({
-                    id,
-                    ...state
-                })
+                    () =>
+                        object
+                )
+                    : object.bindAndUpsert({
+                        id,
+                        ...state
+                    })
         )
     }
 
 }
 
-Entity.context = Symbol('context')
-Entity[Entity.context] = []
 
-Entity.useBind = Symbol('useBind')
-Entity[Entity.useBind] = true
+Entity[$context] = []
 
-Entity.validateContext = Symbol('context')
-Entity[Entity.validateContext] = function (context) {
+Entity[$useBind] = true
+
+Entity[$validateContext] = function (context) {
     return Promise.resolve(context)
 }
 
 export default Entity
+export { $context, $useBind, $validateContext }

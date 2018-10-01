@@ -1,5 +1,10 @@
-import Entity from '../index'
+import Entity, { $context, $validateContext } from '../index'
 import ElasticSearchBatch from '@oudyworks/drivers/ElasticSearch/Batch'
+
+const $client = Symbol('client')
+const $index = Symbol('index')
+const $type = Symbol('type')
+const $cache = Symbol('cache')
 
 class ElasticSearchEntity extends Entity {
     bind(state, trackChange = true, bindObject = {}) {
@@ -17,10 +22,10 @@ class ElasticSearchEntity extends Entity {
     save(bind) {
 
         let payload = this.elasticSearchDocument(),
-            context = this[Entity.context],
-            client = this.constructor[ElasticSearchEntity.client](context),
-            index = this.constructor[ElasticSearchEntity._index](context),
-            type = this.constructor[ElasticSearchEntity._type](context),
+            context = this[$context],
+            client = this.constructor[$client](context),
+            index = this.constructor[$index](context),
+            type = this.constructor[$type](context),
             $return = Promise.resolve(this)
 
         if (this.id)
@@ -84,12 +89,12 @@ class ElasticSearchEntity extends Entity {
 
     }
     static load(id, context = {}) {
-        return this[Entity.validateContext](context).then(
+        return this[$validateContext](context).then(
             () => {
-                let client = this[ElasticSearchEntity.client](context),
-                    index = this[ElasticSearchEntity._index](context),
-                    type = this[ElasticSearchEntity._type](context),
-                    cache = this[ElasticSearchEntity.cache](context)
+                let client = this[$client](context),
+                    index = this[$index](context),
+                    type = this[$type](context),
+                    cache = this[$cache](context)
                 return ElasticSearchBatch.load(id, client, index, type, cache)
                     .then(document => {
                         let instance = new this()
@@ -100,12 +105,12 @@ class ElasticSearchEntity extends Entity {
         )
     }
     static loadAll(query = { query: { match_all: {} }, limit: 20, page: 1 }, context = {}) {
-        return this[Entity.validateContext](context).then(
+        return this[$validateContext](context).then(
             () => {
-                let client = this[ElasticSearchEntity.client](context),
-                    index = this[ElasticSearchEntity._index](context),
-                    type = this[ElasticSearchEntity._type](context),
-                    cache = this[ElasticSearchEntity.cache](context)
+                let client = this[$client](context),
+                    index = this[$index](context),
+                    type = this[$type](context),
+                    cache = this[$cache](context)
                 return ElasticSearchBatch.loadAll(query, client, index, type, cache)
                     .then(result => {
                         result.list = result.list.map(document => {
@@ -119,12 +124,12 @@ class ElasticSearchEntity extends Entity {
         )
     }
     static loadMany(ids, context = {}) {
-        return this[Entity.validateContext](context).then(
+        return this[$validateContext](context).then(
             () => {
-                let client = this[ElasticSearchEntity.client](context),
-                    index = this[ElasticSearchEntity._index](context),
-                    type = this[ElasticSearchEntity._type](context),
-                    cache = this[ElasticSearchEntity.cache](context)
+                let client = this[$client](context),
+                    index = this[$index](context),
+                    type = this[$type](context),
+                    cache = this[$cache](context)
                 return ElasticSearchBatch.loadMany(ids, client, index, type, cache)
                     .then(result =>
                         result.map(document => {
@@ -136,49 +141,45 @@ class ElasticSearchEntity extends Entity {
         )
     }
     static count(query = { match_all: {} }, context = {}) {
-        return this[Entity.validateContext](context).then(
+        return this[$validateContext](context).then(
             () => {
-                let client = this[ElasticSearchEntity.client](context),
-                    index = this[ElasticSearchEntity._index](context),
-                    type = this[ElasticSearchEntity._type](context),
-                    cache = this[ElasticSearchEntity.cache](context)
+                let client = this[$client](context),
+                    index = this[$index](context),
+                    type = this[$type](context),
+                    cache = this[$cache](context)
                 return ElasticSearchBatch.count(query, client, index, type, cache)
             }
         )
     }
     static clear(id, context = {}) {
-        return this[Entity.validateContext](context).then(
+        return this[$validateContext](context).then(
             () => {
-                let client = this[ElasticSearchEntity.client](context),
-                    index = this[ElasticSearchEntity._index](context),
-                    type = this[ElasticSearchEntity._type](context),
-                    cache = this[ElasticSearchEntity.cache](context)
+                let client = this[$client](context),
+                    index = this[$index](context),
+                    type = this[$type](context),
+                    cache = this[$cache](context)
                 return ElasticSearchBatch.clear(id, client, index, type, cache)
             }
         )
     }
 }
 
-ElasticSearchEntity.client = Symbol('client')
-ElasticSearchEntity._index = Symbol('index')
-ElasticSearchEntity._type = Symbol('type')
-ElasticSearchEntity.cache = Symbol('cache')
-
-ElasticSearchEntity[ElasticSearchEntity.client] = function (context) {
+ElasticSearchEntity[$client] = function (context) {
     return 'default'
 }
-ElasticSearchEntity[ElasticSearchEntity._type] = function (context) {
+ElasticSearchEntity[$type] = function (context) {
     return '_doc'
 }
-ElasticSearchEntity[ElasticSearchEntity._index] = function (context) {
-    return this[Entity.context].map(
+ElasticSearchEntity[$index] = function (context) {
+    return this[$context].map(
         key =>
             `${key}_${context[key]}`
 
     ).concat(this.pluralName.toLowerCase()).join('_')
 }
-ElasticSearchEntity[ElasticSearchEntity.cache] = function (context) {
+ElasticSearchEntity[$cache] = function (context) {
     return false
 }
 
 export default ElasticSearchEntity
+export { $client, $index, $type, $cache }
