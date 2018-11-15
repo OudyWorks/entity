@@ -1,12 +1,26 @@
 const { get } = require("object-path")
 //const util = require("util")
-
-let isObject = obj => (obj instanceof Object) && !(obj instanceof Array)
-let isArray = obj => Array.isArray(obj)
-let isObjectEmpty = obj => Object.keys(obj).length == 0
-let typeOf = (obj, type) => typeof obj == type
-let sliceFromEnd = (str, sub) => str.substring(0, str.lastIndexOf(sub))
 //let log = msg => console.log(util.inspect(msg, false, null))
+
+function isObject(obj) {
+    return obj && typeof obj == "object" && !Array.isArray(obj)
+}
+
+function isArray(obj) {
+    return Array.isArray(obj)
+}
+
+function isObjectEmpty(obj) {
+    return Object.keys(obj).length == 0
+}
+
+function typeOf(obj, type) {
+    return typeof obj == type
+}
+
+function sliceFromEnd(str, sub) {
+    return str.substring(0, str.lastIndexOf(sub))
+}
 
 function removeEmptyFields(obj) {
     for (let key in obj)
@@ -19,7 +33,7 @@ function assign(obj, prop, inner_prop, output) {
     delete output[prop][inner_prop]
 }
 
-function isDifferent(obj1, obj2) {
+function areDifferent(obj1, obj2) {
     if (typeof obj1 != typeof obj2) return true
     else if (isObject(obj1) != isObject(obj2)) return true
     return false
@@ -27,7 +41,7 @@ function isDifferent(obj1, obj2) {
 
 function updatedHandler(output, updated, original, edited, prop = "") {
     for (let key in updated) {
-        if (typeOf(updated[key], "object") && !isDifferent(get(original, prop + key), get(edited, prop + key))) {
+        if (typeOf(updated[key], "object") && !areDifferent(get(original, prop + key), get(edited, prop + key))) {
             updatedHandler(output, updated[key], original, edited, prop + key + ".")
         }
         else if (updated[key] != undefined) {
@@ -51,7 +65,7 @@ function deletedHandler(output, deleted, original, edited, prop = "") {
 
 function addedHandler(output, added, original, edited, prop = "") {
     for (let key in added) {
-        if (isDifferent(get(original, prop + key), get(edited, prop + key))) {
+        if (areDifferent(get(original, prop + key), get(edited, prop + key))) {
             output.$set[prop + key] = get(edited, prop + key)
         }
         else if (isArray(get(original, prop + key))) {
@@ -67,7 +81,7 @@ function addedHandler(output, added, original, edited, prop = "") {
 function innerHandler(output, added, original, edited, key, prop) {
     for (let innerKey in added[key]) {
         if (get(original, prop + key)[innerKey]) {
-            if (isDifferent(get(original, prop + key + "." + innerKey), get(edited, prop + key + "." + innerKey))) {
+            if (areDifferent(get(original, prop + key + "." + innerKey), get(edited, prop + key + "." + innerKey))) {
                 output.$set[prop + key + "." + innerKey] = get(edited, prop + key + "." + innerKey)
             }
             else if (isArray(get(original, prop + key + "." + innerKey))) {
