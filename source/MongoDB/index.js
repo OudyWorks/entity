@@ -1,19 +1,12 @@
-import Entity, { $context, $useBind, $validateContext } from '../index'
+import Entity from '../index'
 import MongoDBBatch from '@oudyworks/drivers/MongoDB/Batch'
 import BuildQuery from './queryBuilder'
-
-const $collection = Symbol('collection')
-const $database = Symbol('database')
-const $cache = Symbol('cache')
-const $customID = Symbol('customID')
-const $loaded = Symbol('loaded')
-const $id = Symbol('id')
 
 class MongoDBEntity extends Entity {
     constructor() {
         super()
-        this[$loaded] = false
-        this[$id] = undefined
+        this[MongoDBEntity.loaded] = false
+        this[MongoDBEntity.id] = undefined
     }
     bind(state, trackChange = true, bindObject = {}) {
         if (state._id) {
@@ -25,9 +18,9 @@ class MongoDBEntity extends Entity {
 
     upsert(bind) {
         let payload = this.mongoDBDocument(),
-            context = this[$context],
-            collection = this.constructor[$collection](context),
-            database = this.constructor[$database](context),
+            context = this[Entity.context],
+            collection = this.constructor[MongoDBEntity.collection](context),
+            database = this.constructor[MongoDBEntity.database](context),
             $return = MongoDBBatch.upsert(this.id, payload, collection, database)
 
         return $return.then(
@@ -54,12 +47,12 @@ class MongoDBEntity extends Entity {
     save(bind) {
 
         let payload = this.mongoDBDocument(),
-            context = this[$context],
-            collection = this.constructor[$collection](context),
-            database = this.constructor[$database](context),
+            context = this[Entity.context],
+            collection = this.constructor[MongoDBEntity.collection](context),
+            database = this.constructor[MongoDBEntity.database](context),
             $return = Promise.resolve(this)
 
-        if (this.constructor[$useBind] && this.id && bind) {
+        if (this.constructor[MongoDBEntity.useBind] && this.id && bind) {
             payload = BuildQuery(bind.diff, bind.oldObject, bind.newObject)
             if (payload.length == 0)
                 return $return
@@ -135,25 +128,25 @@ class MongoDBEntity extends Entity {
     }
     mongoDBDocument(noID = false) {
         let document = JSON.parse(this.json())
-        if (this.constructor[$customID](this[$context]) && !noID)
-            document._id = this[$id] || document.id
+        if(this.constructor[MongoDBEntity.customID](this[Entity.context]) && !noID)
+            document._id = this[MongoDBEntity.id] || document.id
         delete document.id
         return document
     }
     static load(id, context = {}) {
-        return this[$validateContext](context).then(
+        return this[Entity.validateContext](context).then(
             () => {
-                let collection = this[$collection](context),
-                    database = this[$database](context),
-                    cache = this[$cache](context)
+                let collection = this[MongoDBEntity.collection](context),
+                    database = this[MongoDBEntity.database](context),
+                    cache = this[MongoDBEntity.cache](context)
                 return MongoDBBatch.load(id, collection, database, cache).then(
                     object => {
                         let instance = new this()
-                        instance[$context] = context
+                        instance[Entity.context] = context
                         instance.bind(object || {}, false)
-                        instance[$id] = id
-                        if (object)
-                            instance[$loaded] = true
+                        instance[MongoDBEntity.id] = id
+                        if(object)
+                            instance[MongoDBEntity.loaded] = true
                         return instance
                     }
                 )
@@ -161,19 +154,19 @@ class MongoDBEntity extends Entity {
         )
     }
     static loadAll(query = { query: {}, limit: 20, page: 1 }, context = {}) {
-        return this[$validateContext](context).then(
+        return this[Entity.validateContext](context).then(
             () => {
-                let collection = this[$collection](context),
-                    database = this[$database](context),
-                    cache = this[$cache](context)
+                let collection = this[MongoDBEntity.collection](context),
+                    database = this[MongoDBEntity.database](context),
+                    cache = this[MongoDBEntity.cache](context)
                 return MongoDBBatch.loadAll(query, collection, database, cache).then(
                     result => {
                         result.list = result.list.map(
                             document => {
                                 let instance = new this()
-                                instance[$context] = context
+                                instance[Entity.context] = context
                                 instance.bind(document || {}, false)
-                                instance[$loaded] = true
+                                instance[MongoDBEntity.loaded] = true
                                 return instance
                             }
                         )
@@ -184,21 +177,21 @@ class MongoDBEntity extends Entity {
         )
     }
     static loadMany(ids, context = {}) {
-        return this[$validateContext](context).then(
+        return this[Entity.validateContext](context).then(
             () => {
-                let collection = this[$collection](context),
-                    database = this[$database](context),
-                    cache = this[$cache](context)
+                let collection = this[MongoDBEntity.collection](context),
+                    database = this[MongoDBEntity.database](context),
+                    cache = this[MongoDBEntity.cache](context)
                 return MongoDBBatch.loadMany(ids, collection, database, cache).then(
                     result => {
                         return result.map(
                             (document, i) => {
                                 let instance = new this()
-                                instance[$context] = context
+                                instance[Entity.context] = context
                                 instance.bind(document || {}, false)
-                                instance[$id] = ids[i]
-                                if (document)
-                                    instance[$loaded] = true
+                                instance[MongoDBEntity.id] = ids[i]
+                                if(document)
+                                    instance[MongoDBEntity.loaded] = true
                                 return instance
                             }
                         )
@@ -208,45 +201,51 @@ class MongoDBEntity extends Entity {
         )
     }
     static count(query = {}, context = {}) {
-        return this[$validateContext](context).then(
+        return this[Entity.validateContext](context).then(
             () => {
-                let collection = this[$collection](context),
-                    database = this[$database](context),
-                    cache = this[$cache](context)
+                let collection = this[MongoDBEntity.collection](context),
+                    database = this[MongoDBEntity.database](context),
+                    cache = this[MongoDBEntity.cache](context)
                 return MongoDBBatch.count(query, collection, database, cache)
             }
         )
     }
     static clear(id, context = {}) {
-        return this[$validateContext](context).then(
+        return this[Entity.validateContext](context).then(
             () => {
-                let collection = this[$collection](context),
-                    database = this[$database](context),
-                    cache = this[$cache](context)
+                let collection = this[MongoDBEntity.collection](context),
+                    database = this[MongoDBEntity.database](context),
+                    cache = this[MongoDBEntity.cache](context)
                 return MongoDBBatch.clear(id, collection, database, cache)
             }
         )
     }
 }
 
-MongoDBEntity[$collection] = function (context) {
-    return this[$context].map(
+MongoDBEntity.collection = Symbol('collection')
+MongoDBEntity.database = Symbol('database')
+MongoDBEntity.cache = Symbol('cache')
+MongoDBEntity.customID = Symbol('customID')
+MongoDBEntity.loaded = Symbol('loaded')
+MongoDBEntity.id = Symbol('id')
+
+MongoDBEntity[MongoDBEntity.collection] = function (context) {
+    return this[Entity.context].map(
         key =>
             `${key}:${context[key]}`
 
     ).concat(this.pluralName.toLowerCase()).join(':')
 }
 
-MongoDBEntity[$database] = function (context) {
+MongoDBEntity[MongoDBEntity.database] = function (context) {
     return 'default'
 }
 
-MongoDBEntity[$cache] = function (context) {
+MongoDBEntity[MongoDBEntity.cache] = function (context) {
     return false
 }
-MongoDBEntity[$customID] = function (context) {
+MongoDBEntity[MongoDBEntity.customID] = function (context) {
     return false
 }
 
 export default MongoDBEntity
-export { $database, $collection, $cache, $customID, $loaded, $id }
