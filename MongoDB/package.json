@@ -1,0 +1,26 @@
+{
+  "name": "@oudy/entity-mongodb",
+  "version": "1.0.0",
+  "description": "Entity for MongoDB",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OudyWorks/entity/tree/master/source/MongoDB#readme"
+  },
+  "keywords": [
+    "entity",
+    "mongodb"
+  ],
+  "author": "Ayoub Oudmane",
+  "license": "ISC",
+  "dependencies": {
+    "@oudy/entity": "^1.0.0",
+    "@oudy/mongodb": "^1.0.2"
+  },
+  "devDependencies": {
+    "jest": "^23.6.0"
+  }
+}
