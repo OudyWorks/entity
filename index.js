@@ -5,8 +5,10 @@ const
   $context = Symbol('context'),
   $useBind = Symbol('useBind'),
   $validateContext = Symbol('validateContext'),
+  $pluralName = Symbol('pluralName'),
   EventEmitterFunctions = ['on', 'once', 'emit', 'removeListener'],
   build = require('./build'),
+  plural = require('plural'),
   /**
    * @return Entity
    */
@@ -29,13 +31,13 @@ const
         }
 
         build() {
-          if(this.constructor[$type])
+          if (this.constructor[$type])
             build(this, this.constructor[$type], this.constructor[$defaultValues] || {})
         }
 
         /**
          * Return a json string of the object
-         * @param Number space 
+         * @param {Number} space 
          * @param {String | Number} replacer 
          * @return String
          */
@@ -43,11 +45,42 @@ const
           return JSON.stringify(this, replacer, space)
         }
 
+        /**
+         * 
+         * @param {Object} state 
+         */
+        bindAndSave(state) {
+          return this.bind(state).then(
+            bind =>
+              (bind.erred || !bind.changes.length) ? this : this.save(bind)
+          )
+        }
+
+        /**
+         * 
+         * @param {*} id 
+         * @param {Object} state 
+         * @param {Object} context 
+         */
+        static bindAndSave(id, state, context = {}) {
+          return this.load(id, context).then(
+            object =>
+              object.bindAndSave(state).then(
+                () =>
+                  object
+              )
+          )
+        }
+
       }
 
     // Events
     for (let i = 0; i < EventEmitterFunctions.length; i++)
       _class[EventEmitterFunctions[i]] = emitter[EventEmitterFunctions[i]].bind(emitter)
+
+    _class[$pluralName] = function () {
+      return plural(this.name)
+    }
 
     return _class
   }
@@ -65,6 +98,7 @@ Object.assign(
     $defaultValues,
     $context,
     $useBind,
-    $validateContext
+    $validateContext,
+    $pluralName
   }
 )

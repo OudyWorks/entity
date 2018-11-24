@@ -33,7 +33,6 @@ test(
   }
 )
 
-
 test(
   '$type && $defaultValues',
   () => {
@@ -52,5 +51,15 @@ test(
   "id": "",
   "name": "Eyup"
 }`)
+  }
+)
+
+test(
+  '$pluralName',
+  () => {
+    class Test extends Entity {
+
+    }
+    expect(Test[Entity.$pluralName]()).toBe('Tests')
   }
 )

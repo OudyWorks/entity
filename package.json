@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "Entity library for Databases and Servers",
   "main": "index.js",
-  "directories": {
-    "test": "tests"
-  },
   "scripts": {
     "test": "jest"
   },
@@ -24,5 +21,8 @@
   "homepage": "https://github.com/OudyWorks/entity#readme",
   "devDependencies": {
     "jest": "^23.6.0"
+  },
+  "dependencies": {
+    "plural": "^1.1.0"
   }
 }
