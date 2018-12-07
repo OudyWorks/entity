@@ -8,6 +8,7 @@ const
   $pluralName = Symbol('pluralName'),
   EventEmitterFunctions = ['on', 'once', 'emit', 'removeListener'],
   build = require('./build'),
+  bind = require('./bind'),
   plural = require('plural'),
   /**
    * @return Entity
@@ -33,6 +34,15 @@ const
         build() {
           if (this.constructor[$type])
             build(this, this.constructor[$type], this.constructor[$defaultValues] || {})
+        }
+
+        bind(state, trackChange = true, bindObject = {}) {
+          return new Promise(
+            resolve => {
+              bind(this, state, this.constructor[$type])
+              resolve(this)
+            }
+          )
         }
 
         /**
@@ -80,6 +90,9 @@ const
 
     _class[$pluralName] = function () {
       return plural(this.name)
+    }
+    _class[$validateContext] = function (context) {
+      return Promise.resolve(context)
     }
 
     return _class

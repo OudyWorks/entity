@@ -1,6 +1,6 @@
 {
   "name": "@oudy/entity",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "Entity library for Databases and Servers",
   "main": "index.js",
   "scripts": {
