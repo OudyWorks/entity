@@ -26,7 +26,7 @@ class MongoDBEntity extends Entity {
     }
     return super.bind(state, trackChange, bindObject)
   }
-  save() {
+  save(bind) {
     const database = this.constructor[$database](this[$context]),
       collection = this.constructor[$collection](this[$context])
     if (this.id)
@@ -44,8 +44,6 @@ class MongoDBEntity extends Entity {
   }
   mongoDBDocument() {
     let document = JSON.parse(this.json())
-    // if (this.constructor[MongoDBEntity.customID](this[Entity.context]) && !noID)
-    // document._id = this[MongoDBEntity.id] || document.id
     delete document.id
     return document
   }

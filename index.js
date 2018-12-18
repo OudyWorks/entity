@@ -40,7 +40,9 @@ const
           return new Promise(
             resolve => {
               bind(this, state, this.constructor[$type])
-              resolve(this)
+              bindObject.changes = []
+              bindObject.changed = !!bindObject.changes
+              resolve(bindObject)
             }
           )
         }
@@ -62,7 +64,7 @@ const
         bindAndSave(state) {
           return this.bind(state).then(
             bind =>
-              (bind.erred || !bind.changes.length) ? this : this.save(bind)
+              this.save(bind)
           )
         }
 

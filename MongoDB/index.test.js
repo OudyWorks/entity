@@ -115,3 +115,22 @@ test(
     )
   }
 )
+test(
+  'Entity.bindAndSave',
+  (resolve) => {
+    Promise.all(
+      new Array(count).fill().map(
+        (u, i) => {
+          Test.bindAndSave(
+            'ayoub',
+            {
+              string: 'Ayouuuub'
+            }
+          )
+        }
+      )
+    ).then(
+      () => resolve()
+    )
+  }
+)
