@@ -39,9 +39,8 @@ const
         bind(state, trackChange = true, bindObject = {}) {
           return new Promise(
             resolve => {
-              bind(this, state, this.constructor[$type])
-              bindObject.changes = []
-              bindObject.changed = !!bindObject.changes
+              bindObject.changes = bind(this, state, this.constructor[$type])
+              bindObject.changed = !!bindObject.changes.length
               resolve(bindObject)
             }
           )
