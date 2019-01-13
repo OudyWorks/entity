@@ -17,8 +17,7 @@
   "author": "Ayoub Oudmane",
   "license": "ISC",
   "dependencies": {
-    "@oudy/entity": "file:..",
-    "@oudy/mongodb": "file:../../drivers/MongoDB",
+    "@oudy/entity": "^1.0.4",
     "dataloader": "^1.4.0"
   },
   "peerDependencies": {
