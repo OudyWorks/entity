@@ -66,6 +66,39 @@ class MongoDBEntity extends Entity {
       }
     )
   }
+  static loadAll({ query = {}, limit = 20, page = 1, sort = {} } = {}, context = {}) {
+    return this[$validateContext](context).then(
+      context => {
+        const database = this[$database](context),
+          collection = this[$collection](context),
+          cursor = MongoDB.getConnection(database).collection(collection).find(query)
+        return Promise.all([
+          cursor.count(),
+          cursor.sort(sort).skip(limit * (page - 1)).limit(limit).toArray().then(
+            documents =>
+              documents.map(
+                document => {
+                  const instance = new this()
+                  instance[$context] = context
+                  instance.bind(document || {}, false)
+                  if (document)
+                    instance[$loaded] = true
+                  return instance
+                }
+              )
+          )
+        ]).then(
+          ([total, list]) => ({
+            total,
+            list,
+            page,
+            limit,
+            sort
+          })
+        )
+      }
+    )
+  }
 }
 
 MongoDBEntity[$database] = function () {

@@ -18,7 +18,9 @@
   "license": "ISC",
   "dependencies": {
     "@oudy/entity": "^1.0.4",
-    "dataloader": "^1.4.0"
+    "@oudy/mongodb": "^1.0.3",
+    "dataloader": "^1.4.0",
+    "mongodb": "^3.1.10"
   },
   "peerDependencies": {
     "@oudy/mongodb": "1.x"

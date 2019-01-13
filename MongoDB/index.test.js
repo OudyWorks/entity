@@ -1,4 +1,4 @@
-const Entity = require('./index'),
+const {$type} = Entity = require('./index'),
   MongoDB = require('@oudy/mongodb')
 
 beforeAll(
@@ -12,49 +12,32 @@ beforeAll(
     )
 )
 
-class Test extends Entity {
+class Country extends Entity {
 
 }
 
-Test[Entity.$type] = {
+Country[$type] = {
   id: String,
-  string: String,
-  number: Number,
-  float: Number,
-  object: {
-    name: String
-  },
-  array: Array,
+  'Country Name': String,
+  Language: String,
+  ISO: Number
 }
 
 test(
-  '$pluralName',
-  () => {
-    const _test = new Test()
-    _test.bind(
-      {
-        string: 'aa',
-        object: {
-          name: 'aaaaaa'
-        },
-        array: [
-          1, 2, {
-            id: 1,
-            name: 'iwuehiuwhe'
-          }
-        ]
-      }
-    ).then(
-      bind => {
-        console.log(bind)
-        console.log(_test)
+  'Entity.loadAll',
+  (resolve) => {
+
+    Country.loadAll({page:5}).then(
+      response => {
+        console.log(response)
+        resolve()
       }
     )
-    expect(Test[Entity.$collection]()).toBe('tests')
+
   }
 )
 
-const count = 13
+// const count = 13
 
 // test(
 //   'Entity.load',
