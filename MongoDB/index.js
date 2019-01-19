@@ -1,24 +1,15 @@
 const {
   $pluralName,
   $validateContext,
-  $context
+  $context,
+  $id
 } = Entity = require('@oudy/entity'),
-  {
-    ObjectID,
-    IDRegex
-  } = MongoDB = require('@oudy/mongodb'),
+  MongoDB = require('@oudy/mongodb'),
   $database = Symbol('database'),
   $collection = Symbol('collection'),
-  $loaded = Symbol('loaded'),
-  $id = Symbol('id'),
   MongoDBBatch = require('@oudy/mongodb/batch');
 
 class MongoDBEntity extends Entity {
-  constructor() {
-    super()
-    this[$loaded] = false
-    this[$id] = undefined
-  }
   bind(state, trackChange = true, bindObject = {}) {
     if (state._id) {
       state.id = state._id.toHexString && state._id.toHexString() || state._id
@@ -50,18 +41,13 @@ class MongoDBEntity extends Entity {
   static load(id, context = {}) {
     return this[$validateContext](context).then(
       context => {
+        if (!id)
+          return super.load(id, context)
         const database = this[$database](context),
           collection = this[$collection](context)
         return MongoDBBatch.load(id, collection, database).then(
-          document => {
-            const instance = new this()
-            instance[$context] = context
-            instance.bind(document || {}, false)
-            instance[$id] = id
-            if (document)
-              instance[$loaded] = true
-            return instance
-          }
+          document =>
+            super.load(id, context, document)
         )
       }
     )
@@ -77,14 +63,8 @@ class MongoDBEntity extends Entity {
           cursor.sort(sort).skip(limit * (page - 1)).limit(limit).toArray().then(
             documents =>
               documents.map(
-                document => {
-                  const instance = new this()
-                  instance[$context] = context
-                  instance.bind(document || {}, false)
-                  if (document)
-                    instance[$loaded] = true
-                  return instance
-                }
+                document =>
+                  super.load(document._id.toHexString(), context, document)
               )
           )
         ]).then(

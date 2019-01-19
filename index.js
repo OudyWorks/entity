@@ -6,6 +6,8 @@ const
   $useBind = Symbol('useBind'),
   $validateContext = Symbol('validateContext'),
   $pluralName = Symbol('pluralName'),
+  $id = Symbol('id'),
+  $loaded = Symbol('loaded'),
   EventEmitterFunctions = ['on', 'once', 'emit', 'removeListener'],
   build = require('./build'),
   bind = require('./bind'),
@@ -26,6 +28,8 @@ const
           super()
           this.build()
           this[$context] = {}
+          this[$id] = undefined
+          this[$loaded] = false
           const emitter = new EventEmitter()
           for (let i = 0; i < EventEmitterFunctions.length; i++)
             this[EventEmitterFunctions[i]] = emitter[EventEmitterFunctions[i]].bind(emitter)
@@ -65,6 +69,16 @@ const
             bind =>
               this.save(bind)
           )
+        }
+
+        static load(id, context = {}, document = undefined) {
+          const instance = new this()
+          instance[$context] = context
+          instance.bind(document || {}, false)
+          instance[$id] = id
+          if (document)
+            instance[$loaded] = true
+          return instance
         }
 
         /**
@@ -111,6 +125,8 @@ Object.assign(
     $type,
     $defaultValues,
     $context,
+    $id,
+    $loaded,
     $useBind,
     $validateContext,
     $pluralName
