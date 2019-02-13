@@ -5,6 +5,7 @@ const
   $context = Symbol('context'),
   $useBind = Symbol('useBind'),
   $validateContext = Symbol('validateContext'),
+  $validatedContext = Symbol('validatedContext'),
   $pluralName = Symbol('pluralName'),
   $id = Symbol('id'),
   $loaded = Symbol('loaded'),
@@ -99,6 +100,8 @@ const
 
       }
 
+    _class[$context] = []
+
     // Events
     for (let i = 0; i < EventEmitterFunctions.length; i++)
       _class[EventEmitterFunctions[i]] = emitter[EventEmitterFunctions[i]].bind(emitter)
@@ -106,7 +109,8 @@ const
     _class[$pluralName] = function () {
       return plural(this.name)
     }
-    _class[$validateContext] = function (context) {
+    _class[$validateContext] = function (context = {}) {
+      context[$validatedContext] = true
       return Promise.resolve(context)
     }
 
@@ -129,6 +133,7 @@ Object.assign(
     $loaded,
     $useBind,
     $validateContext,
+    $validatedContext,
     $pluralName
   }
 )

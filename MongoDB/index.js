@@ -64,7 +64,7 @@ class MongoDBEntity extends Entity {
             documents =>
               documents.map(
                 document =>
-                  super.load(document._id.toHexString(), context, document)
+                  super.load(document._id.toHexString && document._id.toHexString() || document._id, context, document)
               )
           )
         ]).then(
