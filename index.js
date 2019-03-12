@@ -13,6 +13,11 @@ const
   build = require('./build'),
   bind = require('./bind'),
   plural = require('plural'),
+
+  flatten = require('flatten-obj')(),
+  falzy = require('falzy'),
+  v8 = require('v8'),
+
   /**
    * @return Entity
    */
@@ -42,13 +47,64 @@ const
         }
 
         bind(state, trackChange = true, bindObject = {}) {
-          return new Promise(
-            resolve => {
+          return Promise.resolve().then(
+            () => {
+              if (!trackChange)
+                return
+              if (typeof this.validate == 'function') {
+                bindObject.errors = {}
+                bindObject.erred = {}
+                return this.validate(
+                  state,
+                  bindObject.errors,
+                  this[$context]
+                ).then(
+                  () =>
+                    bindObject.erred = !!Object.values(flatten(bindObject.errors)).filter(error => !falzy(error)).length
+                )
+              }
+            }
+          ).then(
+            () => {
               bindObject.changes = bind(this, state, this.constructor[$type])
               bindObject.changed = !!bindObject.changes.length
-              resolve(bindObject)
+              return bindObject
             }
           )
+        }
+
+        save(bind, id) {
+          if (bind) {
+            bind.isNew = !id
+            if (bind.isNew) {
+              this.emit(
+                'new',
+                bind
+              )
+              this.constructor.emit(
+                'new',
+                bind
+              )
+            } else {
+              this.emit(
+                'update',
+                bind
+              )
+              this.constructor.emit(
+                'update',
+                bind
+              )
+            }
+            this.emit(
+              'save',
+              bind
+            )
+            this.constructor.emit(
+              'save',
+              bind
+            )
+          }
+          return id
         }
 
         /**

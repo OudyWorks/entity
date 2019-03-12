@@ -20,18 +20,25 @@ class MongoDBEntity extends Entity {
   save(bind) {
     const database = this.constructor[$database](this[$context]),
       collection = this.constructor[$collection](this[$context])
+    let $return
     if (this.id)
-      return MongoDBBatch.update(this.id, this.mongoDBDocument(), collection, database)
+      $return = MongoDBBatch.update(this.id, this.mongoDBDocument(), collection, database)
     else if (this[$id])
-      return MongoDBBatch.upsert(this[$id], this.mongoDBDocument(), collection, database).then(
-        () =>
-          this.id = this[$id]
+      $return = MongoDBBatch.upsert(this[$id], this.mongoDBDocument(), collection, database).then(
+        id => {
+          this.id = id || this[$id]
+          return id
+        }
       )
     else
-      return MongoDBBatch.insert(this.mongoDBDocument(), collection, database).then(
+      $return = MongoDBBatch.insert(this.mongoDBDocument(), collection, database).then(
         id =>
           this.id = id
       )
+    return $return.then(
+      id =>
+        super.save(bind, id)
+    )
   }
   mongoDBDocument() {
     let document = JSON.parse(this.json())
@@ -84,8 +91,12 @@ class MongoDBEntity extends Entity {
 MongoDBEntity[$database] = function () {
   return 'default'
 }
-MongoDBEntity[$collection] = function () {
-  return this[$pluralName]().toLowerCase()
+MongoDBEntity[$collection] = function (context) {
+  return this[$context].map(
+    key =>
+      `${key}:${context[key]}`
+
+  ).concat(this[$pluralName]().toLowerCase()).join(':')
 }
 
 module.exports = MongoDBEntity

@@ -1,4 +1,4 @@
-const {$type} = Entity = require('./index'),
+const { $type } = Entity = require('./index'),
   MongoDB = require('@oudy/mongodb')
 
 beforeAll(
@@ -18,19 +18,47 @@ class Country extends Entity {
 
 Country[$type] = {
   id: String,
-  'Country Name': String,
-  Language: String,
-  ISO: Number
+  name: String,
+  language: String,
+  iso: String
 }
+
+Country.on(
+  'save',
+  bind => {
+    console.log('Country on save', bind)
+  }
+)
 
 test(
   'Entity.loadAll',
   (resolve) => {
 
-    Country.loadAll({page:5}).then(
-      response => {
-        console.log(response)
-        resolve()
+    Country.load(
+      MongoDB.ObjectID().toHexString()
+    ).then(
+      country => {
+        country.on(
+          'save',
+          bind => {
+            console.log('Country on save  ', bind)
+          }
+        )
+        country.bind(
+          {
+            name: 'Moroccoa',
+            language: 'AR',
+            iso: 'MA'
+          }
+        ).then(
+          bind =>
+            country.save(bind).then(
+              response => {
+                console.log(response)
+                resolve()
+              }
+            )
+        )
       }
     )
 
