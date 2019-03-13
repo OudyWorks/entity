@@ -75,7 +75,7 @@ const
 
         save(bind, id) {
           if (bind) {
-            bind.isNew = !id
+            bind.isNew = !!id
             bind.id = id
             bind.context = this[$context]
             if (bind.isNew) {
