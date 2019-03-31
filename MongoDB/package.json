@@ -1,6 +1,6 @@
 {
   "name": "@oudy/entity-mongodb",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Entity for MongoDB",
   "main": "index.js",
   "scripts": {

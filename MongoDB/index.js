@@ -22,7 +22,10 @@ class MongoDBEntity extends Entity {
       collection = this.constructor[$collection](this[$context])
     let $return
     if (this.id)
-      $return = MongoDBBatch.update(this.id, this.mongoDBDocument(), collection, database)
+      $return = MongoDBBatch.update(this.id, this.mongoDBDocument(), collection, database).then(
+        () =>
+          this.id
+      )
     else if (this[$id])
       $return = MongoDBBatch.upsert(this[$id], this.mongoDBDocument(), collection, database).then(
         id => {

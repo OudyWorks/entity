@@ -76,7 +76,7 @@ const
         save(bind, id) {
           if (bind) {
             bind.isNew = !!id
-            bind.id = id
+            bind.id = id || this.id
             bind.context = this[$context]
             if (bind.isNew) {
               this.emit(
@@ -156,13 +156,22 @@ const
           )
         }
 
+        static on() {
+          return emitter.on.apply(this, arguments)
+        }
+        static once() {
+          return emitter.once.apply(this, arguments)
+        }
+        static emit() {
+          return emitter.emit.apply(this, arguments)
+        }
+        static removeListener() {
+          return emitter.removeListener.apply(this, arguments)
+        }
+
       }
 
     _class[$context] = []
-
-    // Events
-    for (let i = 0; i < EventEmitterFunctions.length; i++)
-      _class[EventEmitterFunctions[i]] = emitter[EventEmitterFunctions[i]].bind(emitter)
 
     _class[$pluralName] = function () {
       return plural(this.name)
