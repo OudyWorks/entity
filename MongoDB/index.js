@@ -62,6 +62,18 @@ class MongoDBEntity extends Entity {
       }
     )
   }
+  static loadMany(ids, context) {
+    return this[$validateContext](context).then(
+      context => {
+        const database = this[$database](context),
+          collection = this[$collection](context)
+        return MongoDBBatch.loadMany(ids, collection, database).then(
+          documents =>
+            super.loadMany(ids, context, documents)
+        )
+      }
+    )
+  }
   static loadAll({ query = {}, limit = 20, page = 1, sort = {} } = {}, context = {}) {
     return this[$validateContext](context).then(
       context => {

@@ -16,7 +16,15 @@ const
 
   flatten = require('flatten-obj')(),
   falzy = require('falzy'),
-  v8 = require('v8'),
+  load = (Entity, id, context = {}, document = undefined) => {
+    const instance = new Entity()
+    instance[$context] = context
+    instance.bind(document || {}, false)
+    instance[$id] = id
+    if (document)
+      instance[$loaded] = true
+    return instance
+  },
 
   /**
    * @return Entity
@@ -75,7 +83,7 @@ const
 
         save(bind, id) {
           if (bind) {
-            bind.isNew = !!id
+            bind.isNew = id != this[$id]
             bind.id = id || this.id
             bind.context = this[$context]
             if (bind.isNew) {
@@ -131,13 +139,14 @@ const
         }
 
         static load(id, context = {}, document = undefined) {
-          const instance = new this()
-          instance[$context] = context
-          instance.bind(document || {}, false)
-          instance[$id] = id
-          if (document)
-            instance[$loaded] = true
-          return instance
+          return load(this, id, context, document)
+        }
+
+        static loadMany(ids, context, documents) {
+          return ids.map(
+            (id, i) =>
+              load(this, id, context, documents[i])
+          )
         }
 
         /**
