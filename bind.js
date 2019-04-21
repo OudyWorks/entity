@@ -1,6 +1,12 @@
 function _bind(object, state, changes = [], preKey = '') {
   Object.keys(state).forEach(
     key => {
+      if (state[key] === null) {
+        if (object[key] != state[key])
+          changes.push([preKey, key].filter(k => k).join('.'))
+        object[key] = state[key]
+        return
+      }
       switch (typeof state[key]) {
         case 'object':
           _bind(object[key] = object[key] || new state[key].constructor, state[key], changes, [preKey, key].filter(k => k).join('.'))
