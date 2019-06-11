@@ -1,13 +1,14 @@
-const {
+import {
   $pluralName,
   $validateContext,
   $context,
-  $id
-} = Entity = require('@oudy/entity'),
-  MongoDB = require('@oudy/mongodb'),
-  $database = Symbol('database'),
-  $collection = Symbol('collection'),
-  MongoDBBatch = require('@oudy/mongodb/batch');
+  $id,
+  default as Entity
+} from '@oudy/entity'
+import MongoDB from '@oudy/mongodb'
+import MongoDBBatch from '@oudy/mongodb/batch'
+const $database = Symbol('database'),
+  $collection = Symbol('collection')
 
 class MongoDBEntity extends Entity {
   bind(state, trackChange = true, bindObject = {}) {
@@ -114,12 +115,8 @@ MongoDBEntity[$collection] = function (context) {
   ).concat(this[$pluralName]().toLowerCase()).join(':')
 }
 
-module.exports = MongoDBEntity
-
-Object.assign(
-  module.exports,
-  {
-    $database,
-    $collection
-  }
-)
+export {
+  $database,
+  $collection
+}
+export default MongoDBEntity
