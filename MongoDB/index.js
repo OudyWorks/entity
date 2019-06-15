@@ -7,6 +7,7 @@ import {
 } from '@oudy/entity'
 import MongoDB from '@oudy/mongodb'
 import MongoDBBatch from '@oudy/mongodb/batch'
+
 const $database = Symbol('database'),
   $collection = Symbol('collection')
 

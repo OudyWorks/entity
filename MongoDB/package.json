@@ -1,6 +1,6 @@
 {
   "name": "@oudy/entity-mongodb",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Entity for MongoDB",
   "main": "index.js",
   "scripts": {
@@ -17,8 +17,8 @@
   "author": "Ayoub Oudmane",
   "license": "ISC",
   "dependencies": {
-    "@oudy/entity": "^1.0.17",
-    "@oudy/mongodb": "^1.0.5",
+    "@oudy/entity": "^1.0.25",
+    "@oudy/mongodb": "^1.0.8",
     "dataloader": "^1.4.0"
   },
   "peerDependencies": {

@@ -1,4 +1,4 @@
-function _bind(object, state, changes = [], preKey = '') {
+export function _bind(object, state, changes = [], preKey = '') {
   Object.keys(state).forEach(
     key => {
       if (state[key] === null) {
@@ -23,7 +23,7 @@ function _bind(object, state, changes = [], preKey = '') {
   )
 }
 
-module.exports = function bind(object, state, type, changes = [], preKey = '') {
+export default function bind(object, state, type, changes = [], preKey = '') {
   Object.keys(state).forEach(
     key => {
       if (typeof type[key] !== 'undefined')

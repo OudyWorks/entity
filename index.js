@@ -1,5 +1,11 @@
-const EventEmitter = require('events'),
-  $type = Symbol('type'),
+import EventEmitter from 'events'
+import build from './build'
+import bind from './bind'
+import plural from 'plural'
+import falzy from 'falzy'
+import flattenObj from 'flatten-obj'
+
+const $type = Symbol('type'),
   $defaultValues = Symbol('defaultValues'),
   $context = Symbol('context'),
   $useBind = Symbol('useBind'),
@@ -9,12 +15,7 @@ const EventEmitter = require('events'),
   $id = Symbol('id'),
   $loaded = Symbol('loaded'),
   EventEmitterFunctions = ['on', 'once', 'emit', 'removeListener'],
-  build = require('./build'),
-  bind = require('./bind'),
-  plural = require('plural'),
-
-  flatten = require('flatten-obj')(),
-  falzy = require('falzy')
+  flatten = flattenObj()
 
 export function load(Entity, id, context = {}, document = undefined) {
   const instance = new Entity()
@@ -202,4 +203,4 @@ export {
   $pluralName
 }
 
-export default extend(class {})
+export default extend(class { })

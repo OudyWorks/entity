@@ -1,4 +1,4 @@
-module.exports = function build(object, type, defaultValues = {}) {
+export default function build(object, type, defaultValues = {}) {
   Object.keys(type).forEach(
     key => {
       switch (typeof type[key]) {
