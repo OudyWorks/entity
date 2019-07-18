@@ -1,6 +1,6 @@
 {
   "name": "@oudy/entity",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "description": "Entity library for Databases and Servers",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,10 @@
   },
   "homepage": "https://github.com/OudyWorks/entity#readme",
   "devDependencies": {
-    "jest": "^23.6.0"
+    "@babel/core": "^7.5.4",
+    "@babel/preset-env": "^7.5.4",
+    "babel-jest": "^24.8.0",
+    "jest": "^24.8.0"
   },
   "dependencies": {
     "falzy": "^0.23.0",

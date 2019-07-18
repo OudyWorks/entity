@@ -1,4 +1,4 @@
-const Entity = require('./index')
+import Entity from './index'
 
 test(
   'Global Events',

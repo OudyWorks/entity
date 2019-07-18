@@ -81,14 +81,14 @@ class MongoDBEntity extends Entity {
       context => {
         const database = this[$database](context),
           collection = this[$collection](context),
-          cursor = MongoDB.getConnection(database).collection(collection).find(query)
+          cursor = MongoDB.getClient(database).collection(collection).find(query)
         return Promise.all([
           cursor.count(),
           cursor.sort(sort).skip(limit * (page - 1)).limit(limit).toArray().then(
             documents =>
               documents.map(
                 document =>
-                  super.load(document._id.toHexString && document._id.toHexString() || document._id, context, document)
+                  super.load(document._id.valueOf(), context, document)
               )
           )
         ]).then(
@@ -120,4 +120,5 @@ export {
   $database,
   $collection
 }
+export * from '@oudy/entity'
 export default MongoDBEntity

@@ -1,14 +1,17 @@
-const { $type } = Entity = require('./index'),
-  MongoDB = require('@oudy/mongodb')
+import {
+  $type,
+  default as Entity
+} from './index'
+import {
+  default as MongoDB,
+  ObjectID
+} from '@oudy/mongodb'
 
 beforeAll(
   () =>
     MongoDB.configure(
-      'mongodb://localhost:27017',
-      {
-        useNewUrlParser: true
-      },
-      'test'
+      global.__MONGO_DB_NAME__,
+      global.__MONGO_URI__
     )
 )
 
@@ -35,7 +38,7 @@ test(
   (resolve) => {
 
     Country.load(
-      MongoDB.ObjectID().toHexString()
+      ObjectID().valueOf()
     ).then(
       country => {
         country.on(
