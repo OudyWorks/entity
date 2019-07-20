@@ -2,3 +2,5 @@ node_modules
 npm
 .idea
 .vscode
+package-lock.json
+yarn.lock
