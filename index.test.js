@@ -1,11 +1,24 @@
-import Entity from './index'
+import {
+  default as Entity,
+  $type,
+  $defaultValues,
+  $pluralName,
+  create
+} from './index'
+
+class Test extends Entity {
+
+}
+
+Test[$type] = {
+  id: String,
+  name: String,
+  age: Number
+}
 
 test(
   'Global Events',
   () => {
-    class Test extends Entity {
-
-    }
     Test.on(
       'test',
       (value) => {
@@ -19,9 +32,6 @@ test(
 test(
   'Instance Events',
   () => {
-    class Test extends Entity {
-
-    }
     const _test = new Test()
     _test.on(
       'test',
@@ -36,30 +46,24 @@ test(
 test(
   '$type && $defaultValues',
   () => {
-    class Test extends Entity {
-
-    }
-    Test[Entity.$type] = {
-      id: String,
-      name: String
-    }
-    Test[Entity.$defaultValues] = {
+    Test[$defaultValues] = {
       name: 'Eyup'
     }
     const _test = new Test()
-    expect(_test.json()).toBe(`{
-  "id": "",
-  "name": "Eyup"
-}`)
+    expect(_test.json()).toBe(JSON.stringify({
+      id: '',
+      name: 'Eyup',
+      age: 0
+    }, null, 2))
+    _test.bind({
+      name: 'Laila'
+    }, true, {id:'Hahaha'}).then(console.log)
   }
 )
 
 test(
   '$pluralName',
   () => {
-    class Test extends Entity {
-
-    }
-    expect(Test[Entity.$pluralName]()).toBe('Tests')
+    expect(Test[$pluralName]()).toBe('Tests')
   }
 )

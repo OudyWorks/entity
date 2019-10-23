@@ -51,7 +51,12 @@ export function extend(Class) {
         if (this.constructor[$type])
           build(this, this.constructor[$type], this.constructor[$defaultValues] || {})
       }
-
+      /**
+       * 
+       * @param {Object} state 
+       * @param {Boolean} trackChange 
+       * @param {object} bindObject 
+       */
       bind(state, trackChange = true, bindObject = {}) {
         return Promise.resolve().then(
           () => {
@@ -201,6 +206,14 @@ export {
   $validateContext,
   $validatedContext,
   $pluralName
+}
+
+export function create(type, parent = class {}, name = 'Test') {
+  return class extends extend(parent) {
+    static get [$type]() {
+      return type
+    }
+  }
 }
 
 export default extend(class { })
