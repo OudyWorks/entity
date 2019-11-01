@@ -4,7 +4,7 @@ import {
   $defaultValues,
   $pluralName,
   create
-} from './index'
+} from './src/index'
 
 class Test extends Entity {
 
